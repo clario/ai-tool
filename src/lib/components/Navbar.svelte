@@ -14,8 +14,6 @@
 
 	// Default navigation links
 	const defaultLinks = [
-		{ href: '#features', text: 'Features' },
-		{ href: '#how-it-works', text: 'How it Works' }
 	];
 
 	// Combine default and additional links
