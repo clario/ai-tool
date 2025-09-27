@@ -2,6 +2,9 @@
 	import type { MappedRoute, PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import Button from './ui/button/button.svelte';
+	import { getWeatherIcon, type WeatherData, WeatherCondition } from '$lib/weather/types';
+	import { onMount } from 'svelte';
+	import { weatherIconMap } from '../../routes/weather/symbolMapper';
 
 	let {
 		places,
@@ -100,6 +103,45 @@
 	function formatDistance(distance: number) {
 		return distance < 1000 ? `${Math.round(distance)} km` : `${(distance / 1000).toFixed(1)}k km`;
 	}
+
+	// Weather data for each place
+	let weatherData = $state<Map<string, WeatherData>>(new Map());
+
+	// Fetch weather data for a place
+	async function fetchWeatherData(place: PlaceSchema) {
+		try {
+			const response = await fetch(`/weather?lat=${place.coordinates.lat}&lon=${place.coordinates.lng}`);
+			if (response.ok) {
+				const data: WeatherData = await response.json();
+				console.log('Weather data for', place.name, data);
+				// Create a new Map to trigger reactivity
+				weatherData = new Map(weatherData.set(place.id, data));
+			}
+		} catch (error) {
+			console.error('Failed to fetch weather data for', place.name, error);
+		}
+	}
+
+	// Fetch weather data for all places when component mounts
+	onMount(() => {
+		places.forEach(place => {
+			fetchWeatherData(place);
+		});
+	});
+
+	// Get weather icon for a place
+	function getPlaceWeatherIcon(placeId: string): string | undefined {
+		const weather = weatherData.get(placeId);
+		console.log('Getting weather icon for', placeId, weather);
+		return weather?.symbol_code ? weatherIconMap[weather.symbol_code] : undefined;
+	}
+
+	// Get temperature for a place
+	function getPlaceTemperature(placeId: string): string {
+		const weather = weatherData.get(placeId);
+		console.log('Getting temperature for', placeId, weather);
+		return weather ? `${Math.round(weather.temperature)}°C` : '--°C';
+	}
 </script>
 
 <!-- Right Sidebar - Travel Plan -->
@@ -141,6 +183,11 @@
 								<CardTitle class="text-base flex items-center gap-2">
 									<span class="w-2 h-2 bg-green-500 rounded-full"></span>
 									{route.from.name}
+									<span class="ml-auto flex items-center gap-1">
+										<!--I have a folder in static called weather, so the icons are there-->
+										<img src={`/weather/${getPlaceWeatherIcon(route.from.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+										<span class="text-sm text-gray-600">{getPlaceTemperature(route.from.id)}</span>
+									</span>
 								</CardTitle>
 							</CardHeader>
 							<CardContent class="pt-0">
@@ -182,6 +229,11 @@
 							<CardTitle class="text-base flex items-center gap-2">
 								<span class="w-2 h-2 bg-blue-500 rounded-full"></span>
 								{route.to.name}
+								<span class="ml-auto flex items-center gap-1">
+									<img src={`/weather/${getPlaceWeatherIcon(route.to.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+
+									<span class="text-sm text-gray-600">{getPlaceTemperature(route.to.id)}</span>
+								</span>
 							</CardTitle>
 						</CardHeader>
 						<CardContent class="pt-0">
