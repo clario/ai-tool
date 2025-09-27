@@ -4,13 +4,10 @@
 	import type { GlobeInstance } from 'globe.gl';
 	import { onDestroy, onMount } from 'svelte';
 
-	let { features }: { features: Array<PlaceSchema | RouteSchema> } = $props();
+	let { places, routes }: { places: Array<PlaceSchema>; routes: Array<RouteSchema> } = $props();
 
 	let globeContainer: HTMLDivElement;
 	let globe: GlobeInstance | null = null;
-
-	const places = $derived(features.filter((f) => f.type === 'Place'));
-	const routes = $derived(features.filter((f) => f.type === 'Route'));
 
 	onMount(async () => {
 		if (!browser || !globeContainer) {

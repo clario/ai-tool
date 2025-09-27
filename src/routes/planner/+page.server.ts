@@ -34,10 +34,12 @@ export const actions: Actions = {
 					'You are a knowledgeable travel planning assistant. Provide helpful, concise responses about travel destinations, planning tips, and recommendations. '
 			});
 
+			const toolCallResults = await result.toolCalls;
+
 			return {
 				success: true,
 				message,
-				aiResponse: await result.toolCalls
+				aiResponse: toolCallResults
 			};
 		} catch (error) {
 			console.error('AI processing error:', error);

@@ -14,7 +14,9 @@
 		}
 	]);
 
-	let tripPlan = $state<Array<PlaceSchema | RouteSchema>>([]);
+	let tripPlaces = $state<Array<PlaceSchema>>([]);
+	let tripRoutes = $state<Array<RouteSchema>>([]);
+
 	let messagesContainer: HTMLDivElement | null = null;
 
 	async function scrollMessagesToBottom() {
@@ -48,7 +50,9 @@
 			if (result.type === 'success') {
 				result.data.aiResponse.forEach((toolCall: any) => {
 					if (toolCall.toolName === 'setTravelPlan') {
-						tripPlan = toolCall.input.data;
+						const { places, routes } = toolCall.input.data;
+						tripPlaces = places;
+						tripRoutes = routes;
 					} else if (toolCall.toolName === 'response') {
 						messages.push({
 							id: Date.now() + 1,
@@ -64,7 +68,7 @@
 </script>
 
 <!-- Full screen globe -->
-<TravelGlobe features={tripPlan} />
+<TravelGlobe places={tripPlaces} routes={tripRoutes} />
 
 <!-- Chat Interface at Bottom -->
 <div class="fixed bottom-16 left-16 right-16 h-1/4">
