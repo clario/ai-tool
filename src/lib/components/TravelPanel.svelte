@@ -10,12 +10,14 @@
 		places,
 		routes,
 		saveIsPending,
-		startDate = $bindable(new Date().toISOString().split('T')[0])
+		startDate = $bindable(new Date().toISOString().split('T')[0]),
+		zoomToPlace
 	}: {
 		places: Array<PlaceSchema>;
 		routes: Array<RouteSchema>;
 		saveIsPending: boolean;
 		startDate?: string;
+		zoomToPlace?: (place: PlaceSchema) => void;
 	} = $props();
 
 	// Sort routes by order and map them with corresponding places
@@ -106,15 +108,21 @@
 	// Get weather icon for a place
 	function getPlaceWeatherIcon(placeId: string): string | undefined {
 		const weather = weatherData.get(placeId);
-		console.log('Getting weather icon for', placeId, weather);
 		return weather?.symbol_code ? weatherIconMap[weather.symbol_code] : undefined;
 	}
 
 	// Get temperature for a place
 	function getPlaceTemperature(placeId: string): string {
 		const weather = weatherData.get(placeId);
-		console.log('Getting temperature for', placeId, weather);
 		return weather ? `${Math.round(weather.temperature)}°C` : '--°C';
+	}
+
+	// Handle clicking on a destination to zoom the globe
+	function handleDestinationClick(place: PlaceSchema) {
+		console.log('Zooming to', place);
+		if (zoomToPlace) {
+			zoomToPlace(place);
+		}
 	}
 </script>
 
@@ -152,35 +160,45 @@
 
 					<!-- Starting Place Card (only for first route) -->
 					{#if index === 0}
-						<Card class="hover:shadow-md transition-shadow">
-							<CardHeader class="pb-2">
-								<CardTitle class="text-base flex items-center gap-2">
-									<span class="w-2 h-2 bg-green-500 rounded-full"></span>
-									{route.from.name}
-									<span class="ml-auto flex items-center gap-1">
-										<!--I have a folder in static called weather, so the icons are there-->
-										<img src={`/weather/${getPlaceWeatherIcon(route.from.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
-										<span class="text-sm text-gray-600">{getPlaceTemperature(route.from.id)}</span>
-									</span>
-								</CardTitle>
-							</CardHeader>
-							<CardContent class="pt-0">
-								<div class="space-y-2 text-sm text-gray-600">
-									<div class="flex justify-between">
-										<span class="font-medium">Days:</span>
-										<span>3 days</span>
+						<button 
+							type="button" 
+							class="w-full text-left cursor-pointer" 
+							onclick={() => handleDestinationClick(route.from)}
+							aria-label={`Zoom to ${route.from.name}`}
+						>
+							<Card class="hover:shadow-md transition-shadow">
+								<CardHeader class="pb-2">
+									<CardTitle class="text-base flex items-center gap-2">
+										<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+										{route.from.name}
+										<span class="ml-auto flex items-center gap-1">
+											<!--I have a folder in static called weather, so the icons are there-->
+											<!--Only show the icon if it exists-->
+											{#if getPlaceWeatherIcon(route.from.id)}
+												<img src={`/weather/${getPlaceWeatherIcon(route.from.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+											{/if}
+											<span class="text-sm text-gray-600">{getPlaceTemperature(route.from.id)}</span>
+										</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent class="pt-0">
+									<div class="space-y-2 text-sm text-gray-600">
+										<div class="flex justify-between">
+											<span class="font-medium">Days:</span>
+											<span>3 days</span>
+										</div>
+										<div class="flex justify-between">
+											<span class="font-medium">Arriving:</span>
+											<span>{formatDate(fromDates.arrival)}</span>
+										</div>
+										<div class="flex justify-between">
+											<span class="font-medium">Leaving:</span>
+											<span>{formatDate(fromDates.departure)}</span>
+										</div>
 									</div>
-									<div class="flex justify-between">
-										<span class="font-medium">Arriving:</span>
-										<span>{formatDate(fromDates.arrival)}</span>
-									</div>
-									<div class="flex justify-between">
-										<span class="font-medium">Leaving:</span>
-										<span>{formatDate(fromDates.departure)}</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+								</CardContent>
+							</Card>
+						</button>
 					{/if}
 
 					<!-- Route Distance Line (Vertical Timeline) -->
@@ -198,35 +216,44 @@
 					</div>
 
 					<!-- Destination Place Card -->
-					<Card class="hover:shadow-md transition-shadow">
-						<CardHeader class="pb-2">
-							<CardTitle class="text-base flex items-center gap-2">
-								<span class="w-2 h-2 bg-blue-500 rounded-full"></span>
-								{route.to.name}
-								<span class="ml-auto flex items-center gap-1">
-									<img src={`/weather/${getPlaceWeatherIcon(route.to.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+					<button 
+						type="button" 
+						class="w-full text-left cursor-pointer" 
+						onclick={() => handleDestinationClick(route.to)}
+						aria-label={`Zoom to ${route.to.name}`}
+					>
+						<Card class="hover:shadow-md transition-shadow">
+							<CardHeader class="pb-2">
+								<CardTitle class="text-base flex items-center gap-2">
+									<span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+									{route.to.name}
+									<span class="ml-auto flex items-center gap-1">
+										{#if getPlaceWeatherIcon(route.to.id)}
+											<img src={`/weather/${getPlaceWeatherIcon(route.to.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+										{/if}
 
-									<span class="text-sm text-gray-600">{getPlaceTemperature(route.to.id)}</span>
-								</span>
-							</CardTitle>
-						</CardHeader>
-						<CardContent class="pt-0">
-							<div class="space-y-2 text-sm text-gray-600">
-								<div class="flex justify-between">
-									<span class="font-medium">Days:</span>
-									<span>3 days</span>
+										<span class="text-sm text-gray-600">{getPlaceTemperature(route.to.id)}</span>
+									</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent class="pt-0">
+								<div class="space-y-2 text-sm text-gray-600">
+									<div class="flex justify-between">
+										<span class="font-medium">Days:</span>
+										<span>3 days</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="font-medium">Arriving:</span>
+										<span>{formatDate(toDates.arrival)}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="font-medium">Leaving:</span>
+										<span>{formatDate(toDates.departure)}</span>
+									</div>
 								</div>
-								<div class="flex justify-between">
-									<span class="font-medium">Arriving:</span>
-									<span>{formatDate(toDates.arrival)}</span>
-								</div>
-								<div class="flex justify-between">
-									<span class="font-medium">Leaving:</span>
-									<span>{formatDate(toDates.departure)}</span>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+							</CardContent>
+						</Card>
+					</button>
 				{/each}
 			{/if}
 		</div>

@@ -4,7 +4,11 @@
 	import type { GlobeInstance } from 'globe.gl';
 	import { onDestroy, onMount } from 'svelte';
 
-	let { places, routes }: { places: Array<PlaceSchema>; routes: Array<RouteSchema> } = $props();
+	let { places, routes, zoomToPlace = $bindable() }: { 
+		places: Array<PlaceSchema>; 
+		routes: Array<RouteSchema>;
+		zoomToPlace?: (place: PlaceSchema) => void;
+	} = $props();
 
 	let globeContainer: HTMLDivElement;
 	let globe: GlobeInstance | null = null;
@@ -15,6 +19,25 @@
 			globe.height(globeContainer.clientHeight);
 		}
 	}
+
+	// Function to zoom to a specific place
+	export function zoomToLocation(place: PlaceSchema) {
+		console.log('Zooming to', place);
+		if (globe) {
+			globe.pointOfView({
+				lat: place.coordinates.lat,
+				lng: place.coordinates.lng,
+				altitude: 0.2 // Closer zoom level
+			}, 1000); // 1 second animation
+		}
+	}
+
+	// Expose the zoom function to parent component
+	$effect(() => {
+		if (zoomToPlace !== undefined) {
+			zoomToPlace = zoomToLocation;
+		}
+	});
 
 	onMount(() => {
 		if (!browser || !globeContainer) {
