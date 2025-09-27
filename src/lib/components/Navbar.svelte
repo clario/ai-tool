@@ -13,7 +13,7 @@
 	}>();
 
 	// Default navigation links
-	const defaultLinks = [];
+	const defaultLinks: Array<{ href: string; text: string }> = [];
 
 	// Combine default and additional links
 	const allLinks = [...defaultLinks, ...additionalLinks];

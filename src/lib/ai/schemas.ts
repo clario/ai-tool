@@ -17,7 +17,8 @@ type PlaceSchema = z.infer<typeof placeSchema>;
 const routeSchema = z.object({
 	fromId: z.string().describe('The ID of the starting place'),
 	toId: z.string().describe('The ID of the destination place'),
-	distance: z.number().describe('The distance between the two places in kilometers')
+	distance: z.number().describe('The distance between the two places in kilometers'),
+	order: z.number().describe('The order of the route in the trip. If this is the first route, the order should be 1.'),
 });
 
 type RouteSchema = z.infer<typeof routeSchema>;
