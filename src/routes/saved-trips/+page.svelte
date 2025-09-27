@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -21,8 +21,8 @@
 
 			if (result.type === 'success') {
 				deleteMessage = 'Trip deleted successfully!';
-				// Refresh the page to update the list
-				await goto('/saved-trips', { replaceState: true });
+				// Invalidate all data to force reload
+				await invalidateAll();
 			} else {
 				deleteMessage = 'Failed to delete trip. Please try again.';
 			}
