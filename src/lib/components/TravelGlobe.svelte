@@ -16,56 +16,63 @@
 		}
 	}
 
-	onMount(async () => {
+	onMount(() => {
 		if (!browser || !globeContainer) {
 			return;
 		}
 
-		const { default: Globe } = await import('globe.gl');
+		import('globe.gl').then(({ default: Globe }) => {
+			globe = new Globe(globeContainer)
+				.globeImageUrl('/2_no_clouds_16k.jpg')
+				.width(window.innerWidth)
+				.height(window.innerHeight)
+				.backgroundColor('#00000000');
 
-		globe = new Globe(globeContainer)
-			.globeImageUrl('/2_no_clouds_16k.jpg')
-			.width(window.innerWidth)
-			.height(window.innerHeight)
-			.backgroundColor('#00000000');
+			globe.pointOfView({
+				lat: 60,
+				lng: 5.3,
+				altitude: 0.6
+			});
 
-		globe.pointOfView({
-			lat: 60,
-			lng: 5.3,
-			altitude: 0.6
+			updatePlaceFeatures(places);
+			updateRouteFeatures(routes, places);
+			resizeGlobe();
 		});
 
-		updatePlaceFeatures(places);
-		updateRouteFeatures(routes);
-
 		window.addEventListener('resize', resizeGlobe);
-		resizeGlobe();
 
 		return () => {
 			window.removeEventListener('resize', resizeGlobe);
 		};
 	});
 
-	$effect(() => updatePlaceFeatures(places));
-	$effect(() => updateRouteFeatures(routes));
+	$effect(() => {
+		updatePlaceFeatures(places);
+		updateRouteFeatures(routes, places);
+	});
 
 	function updatePlaceFeatures(places: Array<PlaceSchema>) {
 		if (!globe) return;
 
+		const deepCopyOfPlaces: Array<PlaceSchema> = JSON.parse(JSON.stringify(places));
+
 		globe
-			.labelsData(places)
+			.labelsData(deepCopyOfPlaces)
 			.labelLat((d) => (d as PlaceSchema).coordinates.lat)
 			.labelLng((d) => (d as PlaceSchema).coordinates.lng)
 			.labelText((d) => (d as PlaceSchema).name)
 			.labelColor(() => '#FFFFFF');
 	}
 
-	function updateRouteFeatures(routes: Array<RouteSchema>) {
+	function updateRouteFeatures(routes: Array<RouteSchema>, places: Array<PlaceSchema>) {
 		if (!globe) return;
 
-		const mappedRoutes = routes.reduce<MappedRoute[]>((acc, route) => {
+		const deepCopyOfRoutes: Array<RouteSchema> = JSON.parse(JSON.stringify(routes));
+		const deepCopyOfPlaces: Array<PlaceSchema> = JSON.parse(JSON.stringify(places));
+
+		const mappedRoutes = deepCopyOfRoutes.reduce<MappedRoute[]>((acc, route) => {
 			const from = places.find((p) => p.id === route.fromId);
-			const to = places.find((p) => p.id === route.toId);
+			const to = deepCopyOfPlaces.find((p) => p.id === route.toId);
 
 			if (from && to) {
 				acc.push({

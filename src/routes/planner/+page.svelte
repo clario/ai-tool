@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
+	import Navbar from '$lib/components/Navbar.svelte';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Navbar from '$lib/components/Navbar.svelte';
+	import type { ModelMessage } from 'ai';
 	import { tick } from 'svelte';
 
 	// Chat messages
-	let messages = $state([
+	let messages = $state<ModelMessage[]>([
 		{
-			id: 1,
-			text: "Hello! I'm your AI travel assistant. How can I help you plan your trip?",
-			type: 'ai'
+			content: "Hello! I'm your AI travel assistant. How can I help you plan your trip?",
+			role: 'assistant'
 		}
 	]);
 
@@ -37,16 +37,15 @@
 		isSubmitting = true;
 		// Reset form after submission
 		messages.push({
-			id: Date.now(),
-			text: messageInput,
-			type: 'user'
+			content: messageInput,
+			role: 'user'
 		});
+
 		scrollMessagesToBottom();
 
 		return async ({ result, update }: any) => {
 			isSubmitting = false;
 			messageInput = ''; // Clear input
-			console.log('result', result);
 
 			if (result.type === 'success') {
 				result.data.aiResponse.forEach((toolCall: any) => {
@@ -54,14 +53,17 @@
 						const { places, routes } = toolCall.input;
 						tripPlaces = places;
 						tripRoutes = routes;
+						messages.push({
+							content: toolCall.input.response,
+							role: 'assistant'
+						});
 					} else if (toolCall.toolName === 'response') {
 						messages.push({
-							id: Date.now() + 1,
-							text: toolCall.input.response,
-							type: 'ai'
+							content: toolCall.input.response,
+							role: 'assistant'
 						});
-						scrollMessagesToBottom();
 					}
+					scrollMessagesToBottom();
 				});
 			}
 		};
@@ -92,13 +94,13 @@
 					bind:this={messagesContainer}
 				>
 					{#each messages as message}
-						<div class="flex {message.type === 'user' ? 'justify-end' : 'justify-start'}">
+						<div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}">
 							<div
-								class="max-w-xs px-3 py-2 rounded-lg {message.type === 'user'
+								class="max-w-xs px-3 py-2 rounded-lg {message.role === 'user'
 									? 'bg-blue-500 text-white'
 									: 'bg-gray-200 text-gray-800'}"
 							>
-								{message.text}
+								{message.content}
 							</div>
 						</div>
 					{/each}
@@ -107,6 +109,9 @@
 				<!-- Input -->
 				<div class="flex gap-2">
 					<form method="POST" use:enhance={handleSubmit} class="flex gap-2 w-full">
+						<input type="hidden" name="messages" value={JSON.stringify(messages)} />
+						<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
+						<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
 						<input
 							name="message"
 							type="text"

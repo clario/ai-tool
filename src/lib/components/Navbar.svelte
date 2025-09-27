@@ -2,19 +2,18 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 
 	// Props for customization
-	let { 
-		showSignIn = true, 
+	let {
+		showSignIn = true,
 		showGetStarted = true,
-		additionalLinks = [] 
+		additionalLinks = []
 	} = $props<{
 		showSignIn?: boolean;
 		showGetStarted?: boolean;
-		additionalLinks?: Array<{ href: string; text: string; }>;
+		additionalLinks?: Array<{ href: string; text: string }>;
 	}>();
 
 	// Default navigation links
-	const defaultLinks = [
-	];
+	const defaultLinks = [];
 
 	// Combine default and additional links
 	const allLinks = [...defaultLinks, ...additionalLinks];
@@ -40,10 +39,7 @@
 		</a>
 		<div class="hidden md:flex items-center space-x-8">
 			{#each allLinks as link}
-				<a 
-					href={link.href} 
-					class="text-gray-600 hover:text-gray-900 transition-colors font-medium"
-				>
+				<a href={link.href} class="text-gray-600 hover:text-gray-900 transition-colors font-medium">
 					{link.text}
 				</a>
 			{/each}
