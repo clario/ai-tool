@@ -19,7 +19,7 @@ export const actions: Actions = {
 			const prompt = `What is the capital city of ${country}?`;
 
 			const result = streamText({
-				model: 'openai/gpt-5',
+				model: 'xai/grok-4',
 				prompt,
 			system: 'Max 1 words in response'
 			});
