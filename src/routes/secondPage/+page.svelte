@@ -33,19 +33,18 @@
 
 	// Reset loading state when form data changes (server response)
 	$effect(() => {
-		console.log(country)
+		console.log(country);
 		if (form) {
 			isLoading = false;
 		}
 	});
 
 	// Set loading state when form is about to submit
-
 </script>
 
 <h1>Country Capital Finder</h1>
 
-<form method="POST" >
+<form method="POST">
 	<input
 		type="text"
 		name="country"

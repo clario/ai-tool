@@ -1,22 +1,26 @@
 # Travel Assistant Project Context
 
 ## 🎯 Project Overview
+
 We're building an interactive travel assistant that combines a 3D globe visualization with AI-powered conversation to help users plan their trips. The AI will suggest destinations and routes, which will be visualized in real-time on a 3D globe.
 
 ## 🏗️ Architecture & Tech Stack
 
 ### Frontend Stack
+
 - **Framework**: SvelteKit (Svelte 5)
 - **UI Components**: shadcn-svelte + TailwindCSS
 - **3D Visualization**: Globe.gl (WebGL-based 3D globe)
 - **3D Graphics**: Three.js (dependency of Globe.gl)
 
 ### AI Integration
+
 - **AI SDK**: Vercel's `ai` library
 - **Provider**: OpenAI (via `@ai-sdk/openai`)
 - **Function Calling**: AI will use tools/functions to manipulate the globe
 
 ### Additional APIs
+
 - **Weather**: OpenWeatherMap API (for destination weather reports)
 - **Routing**: Future integration with Mapbox/OpenRouteService (currently using straight lines)
 
@@ -81,6 +85,7 @@ const tools = {
 ## 🎯 Key Features
 
 ### Phase 1 (MVP)
+
 - ✅ 3D globe with rotation/zoom
 - ✅ Pin placement for destinations
 - ✅ Straight-line routes between pins
@@ -88,12 +93,14 @@ const tools = {
 - ✅ Weather data for destinations
 
 ### Phase 2 (Enhancement)
+
 - 🔄 Real road routing (Mapbox integration)
 - 🔄 Route optimization suggestions
 - 🔄 Multiple travel modes (driving, flying, train)
 - 🔄 Interactive route editing
 
 ### Phase 3 (Advanced)
+
 - 🔄 Offline mode with cached data
 - 🔄 Collaborative planning (multiple users)
 - 🔄 Export to calendar/maps
@@ -102,12 +109,14 @@ const tools = {
 ## 🌍 Globe Visualization Details
 
 ### Current Implementation (Straight Lines)
+
 - Globe.gl renders direct arcs between coordinates
 - No road-following (acceptable for MVP)
 - Pins show destination names and dates
 - Routes show as colored arcs/curves
 
 ### Future Enhancement (Real Roads)
+
 - Integration with routing APIs
 - Road-following path visualization
 - Turn-by-turn directions
@@ -159,4 +168,4 @@ const tools = {
 
 ---
 
-*This document serves as the single source of truth for project requirements, architecture decisions, and development progress.*
+_This document serves as the single source of truth for project requirements, architecture decisions, and development progress._

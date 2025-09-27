@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import type { Feature, LineString, Point } from 'geojson';
 	import type { GlobeInstance } from 'globe.gl';
 	import { onDestroy, onMount } from 'svelte';
 
-	export let points: Array<{ lat: number; lng: number; name: string; color?: string }> = [];
+	let { features }: { features: Array<Feature> } = $props();
 
 	let globeContainer: HTMLDivElement;
 	let globe: GlobeInstance | null = null;
+
+	const labelFeatures = $derived(features.filter((f) => f.geometry.type === 'Point'));
+	const lineStringFeatures = $derived(features.filter((f) => f.geometry.type === 'LineString'));
 
 	onMount(async () => {
 		if (!browser || !globeContainer) return;
@@ -19,10 +23,9 @@
 			.globeImageUrl('/2_no_clouds_16k.jpg')
 			.width(window.innerWidth)
 			.height(window.innerHeight)
-			.backgroundColor('#00000000')
-			.pointColor('color');
+			.backgroundColor('#000000')
+			.pointColor('#000fff');
 
-		const controls = globe.controls();
 		globe.pointOfView({
 			lat: 60,
 			lng: 5.3,
@@ -30,26 +33,41 @@
 		});
 
 		// Initial data load
-		updatePoints();
+		updateLabelFeatures();
+		updateLineStringFeatures();
 	});
 
 	// Reactive update when points change
-	$: if (globe && points) {
-		updatePoints();
-	}
+	$effect(() => {
+		if (globe && labelFeatures) {
+			updateLabelFeatures();
+		}
+	});
 
-	function updatePoints() {
+	$effect(() => {
+		if (globe && lineStringFeatures) {
+			updateLineStringFeatures();
+		}
+	});
+
+	function updateLabelFeatures() {
 		if (!globe) return;
 
-		const pointsData = points.map((point) => ({
-			lat: point.lat,
-			lng: point.lng,
-			size: 1,
-			color: point.color || '#3b82f6',
-			name: point.name
-		}));
+		globe
+			.labelsData(labelFeatures)
+			.labelLat((d) => (d as Feature<Point>).geometry.coordinates[1])
+			.labelLng((d) => (d as Feature<Point>).geometry.coordinates[0])
+			.labelText((d) => (d as Feature<Point>).properties?.name || '');
+	}
 
-		globe.pointsData(pointsData);
+	function updateLineStringFeatures() {
+		if (!globe) return;
+		console.log(lineStringFeatures);
+		globe
+			.pathsData(lineStringFeatures)
+			.pathPoints((d) => (d as Feature<LineString>).geometry.coordinates.map(([a, b]) => [b, a]))
+			.pathStroke('#000000')
+			.pathDashLength(10);
 	}
 
 	onDestroy(() => {

@@ -65,7 +65,7 @@ export async function getAIResponseByCountry(country: string): Promise<AIRespons
 			ORDER BY created_at DESC
 			LIMIT 1
 		`;
-		return result.rows[0] as AIResponse || null;
+		return (result.rows[0] as AIResponse) || null;
 	} catch (error) {
 		console.error('Error fetching AI response by country:', error);
 		throw error;
