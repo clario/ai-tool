@@ -15,7 +15,7 @@
 	additionalLinks={[
 		{ href: '/planner', text: 'Planner' },
 		{ href: '/saved-trips', text: 'Saved Trips' },
-		{ href: '/secondPage', text: 'Country Capital Finder' }
+		{ href: '/capitalFinder', text: 'Country Capital Finder' }
 	]}
 />
 
