@@ -19,32 +19,32 @@ export interface WeatherData {
 export function getWeatherConditionFromSymbol(symbolCode: string): WeatherCondition {
 	// Map Yr.no symbol codes to our weather conditions
 	const symbol = symbolCode.toLowerCase();
-	
+
 	// Clear/sunny conditions
 	if (symbol.includes('clearsky') || symbol.includes('fair')) {
 		return WeatherCondition.SUNNY;
 	}
-	
+
 	// Partly cloudy conditions
 	if (symbol.includes('partlycloudy') || symbol.includes('cloudy')) {
 		return WeatherCondition.PARTLY_CLOUDY;
 	}
-	
+
 	// Rain conditions - check for intensity
 	if (symbol.includes('rain') || symbol.includes('shower')) {
 		// Heavy rain indicators
-		if (symbol.includes('heavy') || symbol.includes('rain') && !symbol.includes('light')) {
+		if (symbol.includes('heavy') || (symbol.includes('rain') && !symbol.includes('light'))) {
 			return WeatherCondition.HEAVY_RAIN;
 		}
 		// Light rain
 		return WeatherCondition.LIGHT_RAIN;
 	}
-	
+
 	// Snow conditions (treat as rain for simplicity)
 	if (symbol.includes('snow')) {
 		return WeatherCondition.LIGHT_RAIN;
 	}
-	
+
 	// Default to partly cloudy for unknown conditions
 	return WeatherCondition.PARTLY_CLOUDY;
 }
@@ -55,7 +55,7 @@ export function getWeatherCondition(clouds: number, precipitation?: number): Wea
 	if (precipitation && precipitation > 0) {
 		return precipitation > 2.5 ? WeatherCondition.HEAVY_RAIN : WeatherCondition.LIGHT_RAIN;
 	}
-	
+
 	// Based on cloud coverage
 	if (clouds < 25) {
 		return WeatherCondition.SUNNY;

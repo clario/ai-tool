@@ -16,7 +16,7 @@ export const GET = async ({ url }: { url: URL }) => {
 	try {
 		const res = await fetch(apiUrl.toString(), {
 			headers: {
-				'Accept': 'application/json'
+				Accept: 'application/json'
 			}
 		});
 
@@ -31,10 +31,10 @@ export const GET = async ({ url }: { url: URL }) => {
 		// Optionally simplify the response here
 		const current = data.properties.timeseries[0];
 		const details = current.data.instant.details;
-		
+
 		// Get symbol code from next 1 hour forecast (more accurate than instant)
 		const symbolCode = current.data.next_1_hours?.summary?.symbol_code || 'partlycloudy';
-		
+
 		// Determine weather condition from symbol code
 		const condition = getWeatherConditionFromSymbol(symbolCode);
 

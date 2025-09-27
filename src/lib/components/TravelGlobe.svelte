@@ -4,10 +4,16 @@
 	import type { GlobeInstance } from 'globe.gl';
 	import { onDestroy, onMount } from 'svelte';
 
-	let { places, routes, zoomToPlace = $bindable() }: { 
-		places: Array<PlaceSchema>; 
+	let {
+		places,
+		routes,
+		zoomToPlace = $bindable(),
+		onPlaceClick = $bindable()
+	}: {
+		places: Array<PlaceSchema>;
 		routes: Array<RouteSchema>;
 		zoomToPlace?: (place: PlaceSchema) => void;
+		onPlaceClick?: (place: PlaceSchema) => void;
 	} = $props();
 
 	let globeContainer: HTMLDivElement;
@@ -23,11 +29,14 @@
 	// Function to zoom to a specific place
 	export function zoomToLocation(place: PlaceSchema) {
 		if (globe) {
-			globe.pointOfView({
-				lat: place.coordinates.lat,
-				lng: place.coordinates.lng,
-				altitude: 0.2 // Closer zoom level
-			}, 1000); // 1 second animation
+			globe.pointOfView(
+				{
+					lat: place.coordinates.lat,
+					lng: place.coordinates.lng,
+					altitude: 0.2 // Closer zoom level
+				},
+				1000
+			); // 1 second animation
 		}
 	}
 
@@ -73,17 +82,54 @@
 		updateRouteFeatures(routes, places);
 	});
 
+	const markerSvg = `<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="36"
+		height="36"
+		viewBox="0 0 36 36"
+		fill="none"
+	>
+		<path
+			d="M18 0.5C25.5066 0.5 31.4998 5.96518 31.5 12.5996C31.5 18.1014 28.0958 23.8361 24.6074 28.251C22.873 30.4461 21.1374 32.2909 19.835 33.5869C19.1842 34.2345 18.6421 34.7445 18.2637 35.0918C18.1639 35.1834 18.0741 35.2626 17.998 35.3311C17.9225 35.2635 17.8343 35.1848 17.7354 35.0947C17.357 34.75 16.8148 34.2442 16.1641 33.6006C14.8618 32.3126 13.1259 30.4768 11.3916 28.2881C7.90429 23.887 4.5 18.1521 4.5 12.5996C4.50024 5.96518 10.4934 0.5 18 0.5Z"
+			fill="#0F66D8"
+			stroke="white"
+		/>
+		<path
+			d="M18 21C21.866 21 25 17.866 25 14C25 10.134 21.866 7 18 7C14.134 7 11 10.134 11 14C11 17.866 14.134 21 18 21Z"
+			fill="white"
+		/>
+	</svg>`;
+
 	function updatePlaceFeatures(places: Array<PlaceSchema>) {
 		if (!globe) return;
 
 		const deepCopyOfPlaces: Array<PlaceSchema> = JSON.parse(JSON.stringify(places));
 
 		globe
+			.htmlElementsData(deepCopyOfPlaces)
+			.htmlElement((d) => {
+				const el = document.createElement('div');
+				el.innerHTML = markerSvg;
+				el.style.width = `36px`;
+				el.style.height = `36px`;
+				el.style.translate = `0 -50%`;
+				el.style.transition = 'opacity 250ms';
+				el.style.pointerEvents = 'auto';
+				el.style.cursor = 'pointer';
+				el.onclick = () => onPlaceClick?.(d as PlaceSchema);
+				return el;
+			})
+			.htmlLat((d) => (d as PlaceSchema).coordinates.lat)
+			.htmlLng((d) => (d as PlaceSchema).coordinates.lng);
+
+		globe
 			.labelsData(deepCopyOfPlaces)
 			.labelLat((d) => (d as PlaceSchema).coordinates.lat)
 			.labelLng((d) => (d as PlaceSchema).coordinates.lng)
 			.labelText((d) => (d as PlaceSchema).name)
-			.labelColor(() => '#FFFFFF');
+			.labelColor(() => '#FFFF00')
+			.labelDotRadius(0.1)
+			.labelAltitude(0);
 	}
 
 	function updateRouteFeatures(routes: Array<RouteSchema>, places: Array<PlaceSchema>) {

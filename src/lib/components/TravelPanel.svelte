@@ -86,7 +86,9 @@
 	// Fetch weather data for a place
 	async function fetchWeatherData(place: PlaceSchema) {
 		try {
-			const response = await fetch(`/weather?lat=${place.coordinates.lat}&lon=${place.coordinates.lng}`);
+			const response = await fetch(
+				`/weather?lat=${place.coordinates.lat}&lon=${place.coordinates.lng}`
+			);
 			if (response.ok) {
 				const data: WeatherData = await response.json();
 				// Create a new Map to trigger reactivity
@@ -99,7 +101,7 @@
 
 	// Fetch weather data for all places when component mounts
 	onMount(() => {
-		places.forEach(place => {
+		places.forEach((place) => {
 			fetchWeatherData(place);
 		});
 	});
@@ -158,9 +160,9 @@
 
 					<!-- Starting Place Card (only for first route) -->
 					{#if index === 0}
-						<button 
-							type="button" 
-							class="w-full text-left cursor-pointer" 
+						<button
+							type="button"
+							class="w-full text-left cursor-pointer"
 							onclick={() => handleDestinationClick(route.from)}
 							aria-label={`Zoom to ${route.from.name}`}
 						>
@@ -173,9 +175,14 @@
 											<!--I have a folder in static called weather, so the icons are there-->
 											<!--Only show the icon if it exists-->
 											{#if getPlaceWeatherIcon(route.from.id)}
-												<img src={`/weather/${getPlaceWeatherIcon(route.from.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+												<img
+													src={`/weather/${getPlaceWeatherIcon(route.from.id)}.png`}
+													alt="Weather Icon"
+													class="w-6 h-6"
+												/>
 											{/if}
-											<span class="text-sm text-gray-600">{getPlaceTemperature(route.from.id)}</span>
+											<span class="text-sm text-gray-600">{getPlaceTemperature(route.from.id)}</span
+											>
 										</span>
 									</CardTitle>
 								</CardHeader>
@@ -224,9 +231,9 @@
 					</div>
 
 					<!-- Destination Place Card -->
-					<button 
-						type="button" 
-						class="w-full text-left cursor-pointer" 
+					<button
+						type="button"
+						class="w-full text-left cursor-pointer"
 						onclick={() => handleDestinationClick(route.to)}
 						aria-label={`Zoom to ${route.to.name}`}
 					>
@@ -237,7 +244,11 @@
 									{route.to.name}
 									<span class="ml-auto flex items-center gap-1">
 										{#if getPlaceWeatherIcon(route.to.id)}
-											<img src={`/weather/${getPlaceWeatherIcon(route.to.id)}.png`} alt="Weather Icon" class="w-6 h-6" />
+											<img
+												src={`/weather/${getPlaceWeatherIcon(route.to.id)}.png`}
+												alt="Weather Icon"
+												class="w-6 h-6"
+											/>
 										{/if}
 
 										<span class="text-sm text-gray-600">{getPlaceTemperature(route.to.id)}</span>

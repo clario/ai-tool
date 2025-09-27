@@ -121,14 +121,17 @@
 	}
 
 	function handleZoom(place: PlaceSchema) {
-		globeRef.zoomToLocation(place);
+		globeRef?.zoomToLocation(place);
 	}
 </script>
 
-
-
 <!-- Full screen globe -->
-<TravelGlobe places={tripPlaces} routes={tripRoutes} bind:this={globeRef} />
+<TravelGlobe
+	places={tripPlaces}
+	routes={tripRoutes}
+	bind:this={globeRef}
+	onPlaceClick={(e) => handleZoom(e)}
+/>
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
 	<!-- Full screen globe -->
 
@@ -202,7 +205,13 @@
 		<form method="POST" use:enhance={handleSaveTrip} action="?/saveTrip">
 			<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
 			<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
-			<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} saveIsPending={isSaving} zoomToPlace={handleZoom} />
+			<TravelPanel
+				places={tripPlaces}
+				routes={tripRoutes}
+				{startDate}
+				saveIsPending={isSaving}
+				zoomToPlace={handleZoom}
+			/>
 		</form>
 	{/if}
 </div>
