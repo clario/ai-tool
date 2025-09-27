@@ -3,7 +3,19 @@
 	"features": [
 		{
 			"type": "Feature",
-			"properties": {},
+			"properties": {
+				"name": "Alesund"
+			},
+			"geometry": {
+				"coordinates": [6.198817166493143, 62.4824321804349],
+				"type": "Point"
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"name": "Bergen"
+			},
 			"geometry": {
 				"coordinates": [5.066046887294817, 60.41841899893092],
 				"type": "Point"
@@ -14,9 +26,8 @@
 			"properties": {},
 			"geometry": {
 				"coordinates": [
-					[5.314554828491225, 60.40521901242346],
-					[6.198817166493143, 62.4824321804349],
-					[6.328510157406811, 62.461246752618536]
+					[5.066046887294817, 60.41841899893092],
+					[6.198817166493143, 62.4824321804349]
 				],
 				"type": "LineString"
 			}

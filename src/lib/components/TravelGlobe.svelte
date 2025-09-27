@@ -23,8 +23,7 @@
 			.globeImageUrl('/2_no_clouds_16k.jpg')
 			.width(window.innerWidth)
 			.height(window.innerHeight)
-			.backgroundColor('#000000')
-			.pointColor('#000fff');
+			.backgroundColor('#00000000');
 
 		globe.pointOfView({
 			lat: 60,
@@ -57,17 +56,21 @@
 			.labelsData(labelFeatures)
 			.labelLat((d) => (d as Feature<Point>).geometry.coordinates[1])
 			.labelLng((d) => (d as Feature<Point>).geometry.coordinates[0])
-			.labelText((d) => (d as Feature<Point>).properties?.name || '');
+			.labelText((d) => (d as Feature<Point>).properties?.name || '')
+			.labelColor(() => '#FFFFFF');
 	}
 
 	function updateLineStringFeatures() {
 		if (!globe) return;
-		console.log(lineStringFeatures);
+
 		globe
-			.pathsData(lineStringFeatures)
-			.pathPoints((d) => (d as Feature<LineString>).geometry.coordinates.map(([a, b]) => [b, a]))
-			.pathStroke('#000000')
-			.pathDashLength(10);
+			.arcsData(lineStringFeatures)
+			.arcStartLat((d) => (d as Feature<LineString>).geometry.coordinates.at(0)?.[1] ?? 0)
+			.arcStartLng((d) => (d as Feature<LineString>).geometry.coordinates.at(0)?.[0] ?? 0)
+			.arcEndLat((d) => (d as Feature<LineString>).geometry.coordinates.at(-1)?.[1] ?? 0)
+			.arcEndLng((d) => (d as Feature<LineString>).geometry.coordinates.at(-1)?.[0] ?? 0)
+			.arcStroke(0.1)
+			.arcColor(() => '#FFFFFF');
 	}
 
 	onDestroy(() => {
@@ -81,7 +84,6 @@
 	<!-- Globe will be rendered here -->
 </div>
 
-<!-- Inner shadow overlay -->
 <div class="fixed inset-0 w-screen h-screen pointer-events-none">
 	<div class="absolute inset-0 bg-radial-[at_50%_30%] from-transparent to-white/50 to-100%"></div>
 </div>
