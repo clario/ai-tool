@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { tick } from 'svelte';
 	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -18,6 +19,15 @@
 	// Track processed messages to avoid duplicates
 	let processedMessages = $state(new Set());
 	let tripPlan = $state<Array<PlaceSchema | RouteSchema>>([]);
+	let messagesContainer: HTMLDivElement | null = null;
+
+	async function scrollMessagesToBottom() {
+		await tick();
+		messagesContainer?.scrollTo({
+			top: messagesContainer.scrollHeight,
+			behavior: 'smooth'
+		});
+	}
 
 	// Form state
 	let messageInput = $state('');
@@ -32,6 +42,7 @@
 			text: messageInput,
 			type: 'user'
 		});
+		scrollMessagesToBottom();
 
 		return async ({ result, update }: any) => {
 			isSubmitting = false;
@@ -42,6 +53,7 @@
 				text: result.data.aiResponse,
 				type: 'ai'
 			});
+			scrollMessagesToBottom();
 		};
 	}
 
@@ -80,6 +92,8 @@
 					}
 				];
 			}
+
+			scrollMessagesToBottom();
 		}
 	});
 </script>
@@ -94,7 +108,7 @@
 			<h2 class="text-lg font-semibold mb-3 text-gray-800">Travel Assistant</h2>
 
 			<!-- Chat Messages -->
-			<div class="flex-1 overflow-y-auto mb-3 p-2 rounded-lg space-y-2">
+			<div class="flex-1 overflow-y-auto mb-3 p-2 rounded-lg space-y-2" bind:this={messagesContainer}>
 				{#each messages as message}
 					<div class="flex {message.type === 'user' ? 'justify-end' : 'justify-start'}">
 						<div
