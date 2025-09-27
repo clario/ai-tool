@@ -115,10 +115,17 @@ export const actions: Actions = {
 
 			const toolCallResults = await result.toolCalls;
 
+			// Serialize the tool call results to ensure they're JSON-serializable
+			const serializedResults = toolCallResults.map((toolCall: any) => ({
+				toolName: toolCall.toolName,
+				input: toolCall.input,
+				// Remove any non-serializable properties
+			}));
+
 			return {
 				success: true,
 				message,
-				aiResponse: toolCallResults
+				aiResponse: serializedResults
 			};
 		} catch (error) {
 			console.error('AI processing error:', error);

@@ -43,8 +43,6 @@
 
 	let messagesContainer: HTMLDivElement | null = null;
 
-	// Zoom function for the globe
-	let zoomToPlace = $state<((place: PlaceSchema) => void) | undefined>(undefined);
 
 	async function scrollMessagesToBottom() {
 		await tick();
@@ -75,6 +73,7 @@
 		scrollMessagesToBottom();
 
 		return async ({ result, update }: any) => {
+			console.log(result);
 			isSubmitting = false;
 			messageInput = ''; // Clear input
 

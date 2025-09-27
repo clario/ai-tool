@@ -23,6 +23,8 @@ export interface TripPlace {
 	name: string;
 	lat: number;
 	lng: number;
+	what_to_do: string;
+	what_to_eat: string;
 	created_at: Date;
 }
 
@@ -68,10 +70,21 @@ export async function initDatabase() {
 				name VARCHAR(255) NOT NULL,
 				lat DECIMAL(10, 8) NOT NULL,
 				lng DECIMAL(11, 8) NOT NULL,
+				what_to_do TEXT,
+				what_to_eat TEXT,
 				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 				UNIQUE(trip_id, place_id)
 			);
 		`;
+
+		// Add new columns if they don't exist (for existing databases)
+		try {
+			await sql`ALTER TABLE trip_places ADD COLUMN IF NOT EXISTS what_to_do TEXT;`;
+			await sql`ALTER TABLE trip_places ADD COLUMN IF NOT EXISTS what_to_eat TEXT;`;
+		} catch (error) {
+			// Columns might already exist, ignore error
+			console.log('Columns may already exist:', error);
+		}
 
 		// Create trip_routes table
 		await sql`
@@ -159,8 +172,8 @@ export async function saveTrip(
 		if (places.length > 0) {
 			for (const place of places) {
 				await sql`
-					INSERT INTO trip_places (trip_id, place_id, name, lat, lng)
-					VALUES (${trip.id}, ${place.id}, ${place.name}, ${place.coordinates.lat}, ${place.coordinates.lng})
+					INSERT INTO trip_places (trip_id, place_id, name, lat, lng, what_to_do, what_to_eat)
+					VALUES (${trip.id}, ${place.id}, ${place.name}, ${place.coordinates.lat}, ${place.coordinates.lng}, ${place.whatToDo}, ${place.whatToEat})
 				`;
 			}
 		}
@@ -217,7 +230,7 @@ export async function getTripById(tripId: number): Promise<{
 
 		// Get places
 		const placesResult = await sql`
-			SELECT id, trip_id, place_id, name, lat, lng, created_at
+			SELECT id, trip_id, place_id, name, lat, lng, what_to_do, what_to_eat, created_at
 			FROM trip_places
 			WHERE trip_id = ${tripId}
 			ORDER BY created_at

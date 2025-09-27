@@ -10,7 +10,9 @@ const placeSchema = z.object({
 		.string()
 		.describe('A self-defined ID of the place, used to identify the place in the routes'),
 	name: z.string().describe('The name of the place'),
-	coordinates: coordinatesSchema
+	coordinates: coordinatesSchema,
+	whatToDo: z.string().max(30).describe('What to do in this place (max 50 words)'),
+	whatToEat: z.string().max(30).describe('What to eat in this place (max 50 words)')
 });
 type PlaceSchema = z.infer<typeof placeSchema>;
 
@@ -48,6 +50,8 @@ interface TripPlace {
 	name: string;
 	lat: number;
 	lng: number;
+	what_to_do: string;
+	what_to_eat: string;
 	created_at: Date;
 }
 
@@ -68,7 +72,9 @@ function tripPlaceToPlaceSchema(tripPlace: TripPlace): PlaceSchema {
 		coordinates: {
 			lat: tripPlace.lat,
 			lng: tripPlace.lng
-		}
+		},
+		whatToDo: tripPlace.what_to_do || 'Explore local attractions and activities',
+		whatToEat: tripPlace.what_to_eat || 'Try local cuisine and specialties'
 	};
 }
 
@@ -76,7 +82,8 @@ function tripRouteToRouteSchema(tripRoute: TripRoute): RouteSchema {
 	return {
 		fromId: tripRoute.from_id,
 		toId: tripRoute.to_id,
-		distance: tripRoute.distance
+		distance: tripRoute.distance,
+		order: 1 // Default order, should be set based on business logic
 	};
 }
 
