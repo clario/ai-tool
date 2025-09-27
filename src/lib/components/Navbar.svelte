@@ -19,7 +19,7 @@
 	const allLinks = [...defaultLinks, ...additionalLinks];
 </script>
 
-<nav class="relative z-50 px-6 py-6 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+<nav class="fixed top-0 left-0 right-0 z-50 px-6 py-6 bg-white/80 backdrop-blur-md border-b border-gray-200/50 w-full" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 50 !important;">
 	<div class="max-w-7xl mx-auto flex items-center justify-between">
 		<a href="/" class="flex items-center space-x-3">
 			<div class="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl">

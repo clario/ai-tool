@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
-	import Navbar from '$lib/components/Navbar.svelte';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { ModelMessage } from 'ai';
@@ -152,14 +151,6 @@
 <!-- Full screen globe -->
 <TravelGlobe places={tripPlaces} routes={tripRoutes} />
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-	<Navbar
-		additionalLinks={[
-			{ href: '/planner', text: 'Planner' },
-			{ href: '/saved-trips', text: 'Saved Trips' },
-			{ href: '/secondPage', text: 'Country Capital Finder' }
-		]}
-	/>
-
 	<!-- Full screen globe -->
 
 	<!-- Chat Interface at Bottom -->

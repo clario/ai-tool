@@ -8,7 +8,6 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import Navbar from '$lib/components/Navbar.svelte';
 </script>
 
 <svelte:head>
@@ -20,15 +19,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-	<!-- Navigation -->
-	<Navbar
-		additionalLinks={[
-			{ href: '/planner', text: 'Planner' },
-			{ href: '/saved-trips', text: 'Saved Trips' },
-			{ href: '/secondPage', text: 'Country Capital Finder' }
-		]}
-	/>
-
 	<!-- Hero Section -->
 	<section class="relative px-6 py-24 overflow-hidden">
 		<div class="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5"></div>

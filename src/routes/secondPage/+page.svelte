@@ -42,7 +42,6 @@
 	// Set loading state when form is about to submit
 </script>
 
-<h1>Country Capital Finder</h1>
 
 <form method="POST">
 	<input

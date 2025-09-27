@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import Navbar from '$lib/components/Navbar.svelte';
 
 	let { children } = $props();
 </script>
@@ -9,4 +10,14 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{@render children?.()}
+<Navbar 
+	additionalLinks={[
+		{ href: '/planner', text: 'Planner' },
+		{ href: '/saved-trips', text: 'Saved Trips' },
+		{ href: '/secondPage', text: 'Country Capital Finder' }
+	]}
+/>
+
+<main class="pt-24">
+	{@render children?.()}
+</main>

@@ -2,7 +2,6 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
-	import Navbar from '$lib/components/Navbar.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import {
 		Card,
@@ -55,14 +54,6 @@
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-	<Navbar
-		additionalLinks={[
-			{ href: '/planner', text: 'Planner' },
-			{ href: '/saved-trips', text: 'Saved Trips' },
-			{ href: '/secondPage', text: 'Country Capital Finder' }
-		]}
-	/>
-
 	<div class="container mx-auto px-4 py-8 max-w-6xl">
 		<div class="mb-8">
 			<h1 class="text-3xl font-bold text-gray-900 mb-2">Saved Trips</h1>
