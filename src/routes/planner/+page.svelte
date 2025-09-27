@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 
@@ -16,6 +17,7 @@
 
 	// Track processed messages to avoid duplicates
 	let processedMessages = $state(new Set());
+	let tripPlan = $state<Array<PlaceSchema | RouteSchema>>([]);
 
 	// Form state
 	let messageInput = $state('');
@@ -45,7 +47,6 @@
 
 	// Handle form result
 	$effect(() => {
-		console.log('Form effect running, form:', form);
 		if (form?.success && form.message) {
 			const messageKey = `${form.message}-${form.aiResponse || 'no-ai'}`;
 
@@ -54,8 +55,6 @@
 				console.log('Message already processed, skipping');
 				return;
 			}
-
-			console.log('Adding messages, aiResponse:', form.aiResponse);
 
 			// Mark as processed
 			processedMessages.add(messageKey);
@@ -86,34 +85,7 @@
 </script>
 
 <!-- Full screen globe -->
-<TravelGlobe
-	features={[
-		{
-			type: 'Place',
-			id: '1',
-			name: 'New York',
-			coordinates: {
-				lat: 40.7128,
-				lng: -74.006
-			}
-		},
-		{
-			type: 'Place',
-			id: '2',
-			name: 'Los Angeles',
-			coordinates: {
-				lat: 34.0522,
-				lng: -118.2437
-			}
-		},
-		{
-			type: 'Route',
-			fromId: '1',
-			toId: '2',
-			distance: 1000
-		}
-	]}
-/>
+<TravelGlobe features={tripPlan} />
 
 <!-- Chat Interface at Bottom -->
 <div class="fixed bottom-16 left-16 right-16 h-1/4">

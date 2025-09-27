@@ -15,10 +15,14 @@ export const createSetTravelPlanTool = (
 			Create "Place" objects to add a new place to the travel plan.
 			Create "Route" objects to describe the travel between two places.
 			`,
-		inputSchema: setTravelPlanToolInputSchema,
+		inputSchema: z.object({
+			data: setTravelPlanToolInputSchema
+		}),
 		execute: async (input) => {
+			console.log('input', input);
+			console.log('input.data', input.data);
 			try {
-				await onExecute(input);
+				await onExecute(input.data);
 				return 'The travel plan has been set';
 			} catch (error) {
 				return 'Failed to set the travel plan: ' + error;
