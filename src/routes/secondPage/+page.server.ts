@@ -29,23 +29,8 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	// If not in database, get from AI
 	try {
-		const prompt = `What is the capital city of ${country}?`;
 
-		const result = streamText({
-			model: 'openai/gpt-5',
-			prompt,
-			system: 'Max 1 words in response'
-		});
-
-		let capital = '';
-		for await (const chunk of result.textStream) {
-			capital += chunk;
-		}
-
-		// Store in database
-		await insertAIResponse(country, capital);
-
-		return { country, capital, allResponses };
+		return { allResponses };
 	} catch (e) {
 		console.error(e);
 		return { country, capital: '', error: 'Failed to get capital from AI.', allResponses };
