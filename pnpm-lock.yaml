@@ -20,6 +20,9 @@ importers:
       globe.gl:
         specifier: ^2.44.0
         version: 2.44.0
+      lucide-svelte:
+        specifier: ^0.544.0
+        version: 0.544.0(svelte@5.39.6)
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
@@ -1254,6 +1257,11 @@ packages:
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lucide-svelte@0.544.0:
+    resolution: {integrity: sha512-8kBxSivf8SJdEUJRHBpu9bRw0S/qfVK+Yfb92KQnRRBdP425RzT6aQfrIfZctG1oucPVTBQe1ZXgmth/3qVICg==}
+    peerDependencies:
+      svelte: ^3 || ^4 || ^5.0.0-next.42
 
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
@@ -2781,6 +2789,10 @@ snapshots:
   lodash-es@4.17.21: {}
 
   lodash.merge@4.6.2: {}
+
+  lucide-svelte@0.544.0(svelte@5.39.6):
+    dependencies:
+      svelte: 5.39.6
 
   magic-string@0.30.19:
     dependencies:
