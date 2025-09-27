@@ -95,5 +95,7 @@
 </div>
 
 <div class="fixed inset-0 w-screen h-screen pointer-events-none">
+  <p>{places.length} places</p>
+  <p>{routes.length} routes</p>
 	<div class="absolute inset-0 bg-radial-[at_50%_30%] from-transparent to-white/50 to-100%"></div>
 </div>

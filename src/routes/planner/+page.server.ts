@@ -22,13 +22,13 @@ export const actions: Actions = {
 				toolChoice: 'required',
                 tools: {
 					setTravelPlan: createSetTravelPlanTool,
-					response: tool({
-						name: 'response',
-						description: 'Respond to the user',
-						inputSchema: z.object({
-							response: z.string().describe('Max length 25 words')
-						})
-					})
+					// response: tool({
+					// 	name: 'response',
+					// 	description: 'Respond to the user',
+					// 	inputSchema: z.object({
+					// 		response: z.string().describe('Max length 25 words')
+					// 	})
+					// })
 				},
 				system:
 					'You are a knowledgeable travel planning assistant. Provide helpful, concise responses about travel destinations, planning tips, and recommendations. '

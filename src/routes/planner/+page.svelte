@@ -51,7 +51,7 @@
 			if (result.type === 'success') {
 				result.data.aiResponse.forEach((toolCall: any) => {
 					if (toolCall.toolName === 'setTravelPlan') {
-						const { places, routes } = toolCall.input.data;
+						const { places, routes } = toolCall.input;
 						tripPlaces = places;
 						tripRoutes = routes;
 					} else if (toolCall.toolName === 'response') {
