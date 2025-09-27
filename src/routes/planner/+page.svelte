@@ -43,7 +43,6 @@
 
 	let messagesContainer: HTMLDivElement | null = null;
 
-
 	async function scrollMessagesToBottom() {
 		await tick();
 		messagesContainer?.scrollTo({

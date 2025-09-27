@@ -6,7 +6,7 @@ export const load: PageServerLoad = async () => {
 	try {
 		await initDatabase();
 		const trips = await getAllTrips();
-		
+
 		// Get additional trip details for each trip
 		const tripsWithDetails = await Promise.all(
 			trips.map(async (trip) => {
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async () => {
 				}
 			})
 		);
-		
+
 		return { trips: tripsWithDetails };
 	} catch (error) {
 		console.error('Error loading trips:', error);
@@ -71,7 +71,7 @@ export const actions: Actions = {
 
 		try {
 			await initDatabase();
-			
+
 			const result = await sql`
 				UPDATE trips 
 				SET name = ${name}, description = ${description || null}, updated_at = CURRENT_TIMESTAMP

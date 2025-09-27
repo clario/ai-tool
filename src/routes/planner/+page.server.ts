@@ -118,7 +118,7 @@ export const actions: Actions = {
 			// Serialize the tool call results to ensure they're JSON-serializable
 			const serializedResults = toolCallResults.map((toolCall: any) => ({
 				toolName: toolCall.toolName,
-				input: toolCall.input,
+				input: toolCall.input
 				// Remove any non-serializable properties
 			}));
 

@@ -203,11 +203,15 @@
 									</div>
 									<div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
 										<div>
-											<span class="font-medium text-gray-700 text-xs uppercase tracking-wide">What to do:</span>
+											<span class="font-medium text-gray-700 text-xs uppercase tracking-wide"
+												>What to do:</span
+											>
 											<p class="text-sm text-gray-600 mt-1">{route.from.whatToDo}</p>
 										</div>
 										<div>
-											<span class="font-medium text-gray-700 text-xs uppercase tracking-wide">What to eat:</span>
+											<span class="font-medium text-gray-700 text-xs uppercase tracking-wide"
+												>What to eat:</span
+											>
 											<p class="text-sm text-gray-600 mt-1">{route.from.whatToEat}</p>
 										</div>
 									</div>
@@ -272,11 +276,15 @@
 								</div>
 								<div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
 									<div>
-										<span class="font-medium text-gray-700 text-xs uppercase tracking-wide">What to do:</span>
+										<span class="font-medium text-gray-700 text-xs uppercase tracking-wide"
+											>What to do:</span
+										>
 										<p class="text-sm text-gray-600 mt-1">{route.to.whatToDo}</p>
 									</div>
 									<div>
-										<span class="font-medium text-gray-700 text-xs uppercase tracking-wide">What to eat:</span>
+										<span class="font-medium text-gray-700 text-xs uppercase tracking-wide"
+											>What to eat:</span
+										>
 										<p class="text-sm text-gray-600 mt-1">{route.to.whatToEat}</p>
 									</div>
 								</div>
