@@ -9,6 +9,14 @@
 	let globeContainer: HTMLDivElement;
 	let globe: GlobeInstance | null = null;
 
+	function resizeGlobe() {
+		if (globe) {
+			console.log('resize the funcking globe!');
+			globe.width(globeContainer.clientWidth);
+			globe.height(globeContainer.clientHeight);
+		}
+	}
+
 	onMount(async () => {
 		if (!browser || !globeContainer) {
 			return;
@@ -30,6 +38,13 @@
 
 		updatePlaceFeatures(places);
 		updateRouteFeatures(routes);
+
+		window.addEventListener('resize', resizeGlobe);
+		resizeGlobe();
+
+		return () => {
+			window.removeEventListener('resize', resizeGlobe);
+		};
 	});
 
 	$effect(() => updatePlaceFeatures(places));
