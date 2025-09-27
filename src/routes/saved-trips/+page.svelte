@@ -4,7 +4,13 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 	import type { Trip } from '$lib/db';
 
 	let { data }: { data: { trips: Trip[] } } = $props();
@@ -64,7 +70,11 @@
 		</div>
 
 		{#if deleteMessage}
-			<div class="mb-4 p-4 rounded-lg {deleteMessage.includes('successfully') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+			<div
+				class="mb-4 p-4 rounded-lg {deleteMessage.includes('successfully')
+					? 'bg-green-100 text-green-800'
+					: 'bg-red-100 text-red-800'}"
+			>
 				{deleteMessage}
 			</div>
 		{/if}
@@ -72,8 +82,18 @@
 		{#if data.trips.length === 0}
 			<div class="text-center py-12">
 				<div class="text-gray-500 mb-4">
-					<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+					<svg
+						class="mx-auto h-12 w-12 text-gray-400"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+						/>
 					</svg>
 				</div>
 				<h3 class="text-lg font-medium text-gray-900 mb-2">No saved trips yet</h3>
@@ -102,19 +122,19 @@
 										<span>{formatDate(trip.updated_at.toString())}</span>
 									</div>
 								</div>
-								
+
 								<div class="flex gap-2 pt-2">
-									<Button 
-										onclick={() => loadTrip(trip.id)} 
+									<Button onclick={() => loadTrip(trip.id)} class="flex-1">Load Trip</Button>
+									<form
+										method="POST"
+										action="?/deleteTrip"
+										use:enhance={handleDelete}
 										class="flex-1"
 									>
-										Load Trip
-									</Button>
-									<form method="POST" action="?/deleteTrip" use:enhance={handleDelete} class="flex-1">
 										<input type="hidden" name="tripId" value={trip.id} />
-										<Button 
-											type="submit" 
-											variant="destructive" 
+										<Button
+											type="submit"
+											variant="destructive"
 											disabled={isDeleting === trip.id}
 											class="w-full"
 										>

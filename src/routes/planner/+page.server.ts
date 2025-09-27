@@ -1,4 +1,9 @@
-import { placeSchema, routeSchema, tripPlaceToPlaceSchema, tripRouteToRouteSchema } from '$lib/ai/schemas';
+import {
+	placeSchema,
+	routeSchema,
+	tripPlaceToPlaceSchema,
+	tripRouteToRouteSchema
+} from '$lib/ai/schemas';
 import { streamText, tool, generateText, type ModelMessage } from 'ai';
 import z from 'zod';
 import type { Actions, PageServerLoad } from './$types';
@@ -6,16 +11,16 @@ import { saveTrip, getAllTrips, getTripById, initDatabase } from '$lib/db';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const tripId = url.searchParams.get('load');
-	
+
 	if (tripId) {
 		try {
 			await initDatabase();
 			const tripData = await getTripById(parseInt(tripId));
-			
+
 			if (tripData) {
 				const places = tripData.places.map(tripPlaceToPlaceSchema);
 				const routes = tripData.routes.map(tripRouteToRouteSchema);
-				
+
 				return {
 					loadedTrip: {
 						name: tripData.trip.name,
@@ -28,7 +33,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			console.error('Error loading trip:', error);
 		}
 	}
-	
+
 	return {};
 };
 
@@ -47,9 +52,10 @@ export const actions: Actions = {
 			await initDatabase();
 
 			// Generate a trip name based on the first place
-			const tripName = tripPlaces.length > 0 
-				? `Trip to ${tripPlaces[0].name}${tripPlaces.length > 1 ? ` and ${tripPlaces.length - 1} more` : ''}`
-				: 'My Travel Plan';
+			const tripName =
+				tripPlaces.length > 0
+					? `Trip to ${tripPlaces[0].name}${tripPlaces.length > 1 ? ` and ${tripPlaces.length - 1} more` : ''}`
+					: 'My Travel Plan';
 
 			// Save the trip
 			await saveTrip(tripName, null, tripPlaces, tripRoutes);

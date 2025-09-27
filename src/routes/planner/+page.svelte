@@ -7,8 +7,12 @@
 	import type { ModelMessage } from 'ai';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { tick, onMount } from 'svelte';
+	import TravelPanel from '$lib/components/TravelPanel.svelte';
 
-	let { data }: { data: { loadedTrip?: { name: string; places: PlaceSchema[]; routes: RouteSchema[] } } } = $props();
+	let {
+		data
+	}: { data: { loadedTrip?: { name: string; places: PlaceSchema[]; routes: RouteSchema[] } } } =
+		$props();
 
 	// Chat messages
 	let messages = $state<ModelMessage[]>([
@@ -224,77 +228,5 @@
 	</div>
 
 	<!-- Right Sidebar - Travel Plan -->
-	<div
-		class="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-white/90 backdrop-blur-md shadow-xl border-l border-gray-200 z-10"
-	>
-		<div class="p-4 h-full flex flex-col">
-			<h2 class="text-lg font-semibold mb-4 text-gray-800">Travel Plan</h2>
-
-			<!-- Start Date Picker -->
-			<div class="mb-4">
-				<label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">
-					Start Date
-				</label>
-				<input
-					id="startDate"
-					type="date"
-					bind:value={startDate}
-					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-				/>
-			</div>
-
-			<!-- Save Trip Button -->
-			{#if tripPlaces.length > 0}
-				<div class="mb-4">
-					<form method="POST" action="?/saveTrip" use:enhance={handleSaveTrip}>
-						<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
-						<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
-						<Button type="submit" disabled={isSaving} class="w-full">
-							{isSaving ? 'Saving...' : 'Save Trip'}
-						</Button>
-					</form>
-					{#if saveMessage}
-						<div class="mt-2 text-sm {saveMessage.includes('successfully') ? 'text-green-600' : 'text-red-600'}">
-							{saveMessage}
-						</div>
-					{/if}
-				</div>
-			{/if}
-
-			<!-- Destinations List -->
-			<div class="flex-1 overflow-y-auto space-y-3">
-				{#if tripPlaces.length === 0}
-					<div class="text-center text-gray-500 py-8">
-						<p>No destinations planned yet.</p>
-						<p class="text-sm">Ask the AI to create a travel plan!</p>
-					</div>
-				{:else}
-					{#each tripPlaces as place, index}
-						{@const dates = calculateDestinationDates(index)}
-						<Card class="hover:shadow-md transition-shadow">
-							<CardHeader class="pb-2">
-								<CardTitle class="text-base">{place.name}</CardTitle>
-							</CardHeader>
-							<CardContent class="pt-0">
-								<div class="space-y-2 text-sm text-gray-600">
-									<div class="flex justify-between">
-										<span class="font-medium">Days:</span>
-										<span>3 days</span>
-									</div>
-									<div class="flex justify-between">
-										<span class="font-medium">Arriving:</span>
-										<span>{formatDate(dates.arrival)}</span>
-									</div>
-									<div class="flex justify-between">
-										<span class="font-medium">Leaving:</span>
-										<span>{formatDate(dates.departure)}</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					{/each}
-				{/if}
-			</div>
-		</div>
-	</div>
+	<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} />
 </div>

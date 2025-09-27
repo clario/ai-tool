@@ -18,7 +18,11 @@ const routeSchema = z.object({
 	fromId: z.string().describe('The ID of the starting place'),
 	toId: z.string().describe('The ID of the destination place'),
 	distance: z.number().describe('The distance between the two places in kilometers'),
-	order: z.number().describe('The order of the route in the trip. If this is the first route, the order should be 1.'),
+	order: z
+		.number()
+		.describe(
+			'The order of the route in the trip. If this is the first route, the order should be 1.'
+		)
 });
 
 type RouteSchema = z.infer<typeof routeSchema>;
@@ -76,11 +80,11 @@ function tripRouteToRouteSchema(tripRoute: TripRoute): RouteSchema {
 	};
 }
 
-export { 
-	placeSchema, 
-	routeSchema, 
-	type MappedRoute, 
-	type PlaceSchema, 
+export {
+	placeSchema,
+	routeSchema,
+	type MappedRoute,
+	type PlaceSchema,
 	type RouteSchema,
 	type Trip,
 	type TripPlace,

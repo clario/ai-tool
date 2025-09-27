@@ -208,7 +208,7 @@ export async function getTripById(tripId: number): Promise<{
 			FROM trips
 			WHERE id = ${tripId}
 		`;
-		
+
 		if (tripResult.rows.length === 0) {
 			return null;
 		}

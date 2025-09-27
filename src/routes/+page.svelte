@@ -21,7 +21,7 @@
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
 	<!-- Navigation -->
-	<Navbar 
+	<Navbar
 		additionalLinks={[
 			{ href: '/planner', text: 'Planner' },
 			{ href: '/saved-trips', text: 'Saved Trips' },
