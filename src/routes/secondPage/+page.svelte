@@ -42,7 +42,6 @@
 	// Set loading state when form is about to submit
 </script>
 
-
 <form method="POST">
 	<input
 		type="text"

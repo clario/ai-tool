@@ -2,11 +2,11 @@
 	import { enhance } from '$app/forms';
 	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
+	import TravelPanel from '$lib/components/TravelPanel.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { ModelMessage } from 'ai';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { tick, onMount } from 'svelte';
-	import TravelPanel from '$lib/components/TravelPanel.svelte';
+	import { onMount, tick } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	let {
 		data
@@ -41,34 +41,6 @@
 	// Start date state - default to today
 	let startDate = $state(new Date().toISOString().split('T')[0]);
 
-	// Helper function to calculate arrival and departure dates
-	function calculateDestinationDates(placeIndex: number, daysAtDestination: number = 3) {
-		const start = new Date(startDate);
-		let arrivalDate = new Date(start);
-
-		// Add days for previous destinations (assuming 3 days each)
-		for (let i = 0; i < placeIndex; i++) {
-			arrivalDate.setDate(arrivalDate.getDate() + 3);
-		}
-
-		const departureDate = new Date(arrivalDate);
-		departureDate.setDate(departureDate.getDate() + daysAtDestination);
-
-		return {
-			arrival: arrivalDate.toISOString().split('T')[0],
-			departure: departureDate.toISOString().split('T')[0]
-		};
-	}
-
-	// Helper function to format date for display
-	function formatDate(dateString: string) {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			weekday: 'short',
-			month: 'short',
-			day: 'numeric'
-		});
-	}
-
 	let messagesContainer: HTMLDivElement | null = null;
 
 	async function scrollMessagesToBottom() {
@@ -83,7 +55,6 @@
 	let messageInput = $state('');
 	let isSubmitting = $state(false);
 	let isSaving = $state(false);
-	let saveMessage = $state('');
 
 	// Handle form submission with enhance
 	function handleSubmit({ formElement, submitter, cancel }: any) {
@@ -128,21 +99,20 @@
 	// Handle save trip
 	function handleSaveTrip({ formElement, submitter, cancel }: any) {
 		isSaving = true;
-		saveMessage = '';
 
 		return async ({ result, update }: any) => {
 			isSaving = false;
 
 			if (result.type === 'success') {
-				saveMessage = 'Trip saved successfully!';
-				setTimeout(() => {
-					saveMessage = '';
-				}, 3000);
+				toast.success('Trip saved successfully!', {
+					description: 'Your travel plan has been saved and can be accessed later.',
+					duration: 4000
+				});
 			} else {
-				saveMessage = 'Failed to save trip. Please try again.';
-				setTimeout(() => {
-					saveMessage = '';
-				}, 3000);
+				toast.error('Failed to save trip', {
+					description: 'Please try again. If the problem persists, check your connection.',
+					duration: 4000
+				});
 			}
 		};
 	}
@@ -220,6 +190,10 @@
 
 	<!-- Right Sidebar - Travel Plan -->
 	{#if tripPlaces.length > 0 && tripRoutes.length > 0}
-		<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} onSaveTrip={handleSaveTrip} />
+		<form method="POST" use:enhance={handleSaveTrip} action="?/saveTrip">
+			<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
+			<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
+			<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} saveIsPending={isSaving} />
+		</form>
 	{/if}
 </div>

@@ -9,13 +9,13 @@
 	let {
 		places,
 		routes,
-		startDate = $bindable(new Date().toISOString().split('T')[0]),
-		onSaveTrip
+		saveIsPending,
+		startDate = $bindable(new Date().toISOString().split('T')[0])
 	}: {
 		places: Array<PlaceSchema>;
 		routes: Array<RouteSchema>;
+		saveIsPending: boolean;
 		startDate?: string;
-		onSaveTrip?: () => void;
 	} = $props();
 
 	// Sort routes by order and map them with corresponding places
@@ -73,32 +73,6 @@
 			.sort((a, b) => (a.order || 0) - (b.order || 0))
 	);
 
-	// Create itinerary with places and routes in order
-	const itinerary = $derived(() => {
-		const result: Array<{ type: 'place' | 'route'; data: any; index: number }> = [];
-
-		for (let i = 0; i < sortedRoutes.length; i++) {
-			const route = sortedRoutes[i];
-			const fromPlace = places.find((p) => p.id === route.fromId);
-			const toPlace = places.find((p) => p.id === route.toId);
-
-			// Add from place (only for first route to avoid duplicates)
-			if (i === 0 && fromPlace) {
-				result.push({ type: 'place', data: fromPlace, index: i * 2 });
-			}
-
-			// Add route
-			result.push({ type: 'route', data: route, index: i * 2 + 1 });
-
-			// Add to place
-			if (toPlace) {
-				result.push({ type: 'place', data: toPlace, index: i * 2 + 2 });
-			}
-		}
-
-		return result;
-	});
-
 	// Helper function to format distance
 	function formatDistance(distance: number) {
 		return distance < 1000 ? `${Math.round(distance)} km` : `${(distance / 1000).toFixed(1)}k km`;
@@ -152,7 +126,7 @@
 		<h2 class="text-xl font-semibold mb-4 text-gray-800">Your Travel Plan</h2>
 
 		<!-- Start Date Picker -->
-		<div class="mb-4">
+		<div>
 			<label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">
 				Start Date
 			</label>
@@ -160,12 +134,12 @@
 				id="startDate"
 				type="date"
 				bind:value={startDate}
-				class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+				class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
 			/>
 		</div>
 
 		<!-- Route-based Travel Plan -->
-		<div class="flex-1 overflow-y-auto">
+		<div class="flex-1 overflow-y-auto py-4">
 			{#if sortedMappedRoutes().length === 0}
 				<div class="text-center text-gray-500 py-8">
 					<p>No travel routes planned yet.</p>
@@ -259,8 +233,8 @@
 
 		<!-- Save Trip Button -->
 		{#if sortedMappedRoutes().length > 0}
-			<div class="mt-4 pt-4 border-t border-gray-200">
-				<Button class="w-full" onclick={() => onSaveTrip?.()}>Save Trip</Button>
+			<div class="pt-4 border-t border-gray-200">
+				<Button class="w-full" type="submit" disabled={saveIsPending}>Save Trip</Button>
 			</div>
 		{/if}
 	</div>
