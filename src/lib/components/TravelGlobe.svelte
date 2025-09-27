@@ -11,7 +11,6 @@
 
 	function resizeGlobe() {
 		if (globe) {
-			console.log('resize the funcking globe!');
 			globe.width(globeContainer.clientWidth);
 			globe.height(globeContainer.clientHeight);
 		}
