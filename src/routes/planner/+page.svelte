@@ -58,7 +58,7 @@
 	let messageInput = $state('');
 	let isSubmitting = $state(false);
 	let isSaving = $state(false);
-	let globeRef;
+	let globeRef: TravelGlobe | null = null;
 
 	// Handle form submission with enhance
 	function handleSubmit({ formElement, submitter, cancel }: any) {
