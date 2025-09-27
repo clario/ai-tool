@@ -1,10 +1,18 @@
 <script lang="ts">
+	interface AIResponse {
+		id: number;
+		country: string;
+		capital: string;
+		created_at: Date;
+	}
+
 	interface Props {
 		data: {
 			country: string;
 			capital: string;
 			error?: string;
 			success?: boolean;
+			allResponses?: AIResponse[];
 		};
 		form?: {
 			success?: boolean;
@@ -63,6 +71,23 @@
 
 {#if success}
 	<p class="capital">Capital: {capital}</p>
+{/if}
+
+{#if data.allResponses && data.allResponses.length > 0}
+	<div class="responses-section">
+		<h2>Previous Responses</h2>
+		<div class="responses-grid">
+			{#each data.allResponses as response}
+				<div class="response-card">
+					<div class="response-country">{response.country}</div>
+					<div class="response-capital">{response.capital}</div>
+					<div class="response-date">
+						{new Date(response.created_at).toLocaleDateString()}
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -177,5 +202,59 @@
 		text-align: center;
 		color: #333;
 		margin-bottom: 0.5rem;
+	}
+
+	.responses-section {
+		margin-top: 3rem;
+		max-width: 800px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.responses-section h2 {
+		text-align: center;
+		color: #333;
+		margin-bottom: 2rem;
+		font-size: 1.5rem;
+	}
+
+	.responses-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1rem;
+	}
+
+	.response-card {
+		background: #f8f9fa;
+		border: 1px solid #e9ecef;
+		border-radius: 8px;
+		padding: 1rem;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.response-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+	}
+
+	.response-country {
+		font-weight: bold;
+		font-size: 1.1rem;
+		color: #007bff;
+		margin-bottom: 0.5rem;
+	}
+
+	.response-capital {
+		font-size: 1rem;
+		color: #28a745;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.response-date {
+		font-size: 0.85rem;
+		color: #6c757d;
+		font-style: italic;
 	}
 </style>
