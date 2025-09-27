@@ -28,23 +28,14 @@
 			altitude: 0.6
 		});
 
-		updatePlaceFeatures();
-		updateRouteFeatures();
+		updatePlaceFeatures(places);
+		updateRouteFeatures(routes);
 	});
 
-	$effect(() => {
-		if (globe && places) {
-			updatePlaceFeatures();
-		}
-	});
+	$effect(() => updatePlaceFeatures(places));
+	$effect(() => updateRouteFeatures(routes));
 
-	$effect(() => {
-		if (globe && routes) {
-			updateRouteFeatures();
-		}
-	});
-
-	function updatePlaceFeatures() {
+	function updatePlaceFeatures(places: Array<PlaceSchema>) {
 		if (!globe) return;
 
 		globe
@@ -55,7 +46,7 @@
 			.labelColor(() => '#FFFFFF');
 	}
 
-	function updateRouteFeatures() {
+	function updateRouteFeatures(routes: Array<RouteSchema>) {
 		if (!globe) return;
 
 		const mappedRoutes = routes.reduce<MappedRoute[]>((acc, route) => {
@@ -95,7 +86,7 @@
 </div>
 
 <div class="fixed inset-0 w-screen h-screen pointer-events-none">
-  <p>{places.length} places</p>
-  <p>{routes.length} routes</p>
+	<p>{places.length} places</p>
+	<p>{routes.length} routes</p>
 	<div class="absolute inset-0 bg-radial-[at_50%_30%] from-transparent to-white/50 to-100%"></div>
 </div>
