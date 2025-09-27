@@ -3,12 +3,9 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { enhance } from '$app/forms';
 
-
-
 	let props = $props();
 
 	console.log('Props:', props);
-
 
 	// Test points
 	let points = [
@@ -19,9 +16,13 @@
 
 	// Chat messages
 	let messages = $state([
-		{ id: 1, text: "Hello! I'm your AI travel assistant. How can I help you plan your trip?", type: 'ai' }
+		{
+			id: 1,
+			text: "Hello! I'm your AI travel assistant. How can I help you plan your trip?",
+			type: 'ai'
+		}
 	]);
-	
+
 	// Track processed messages to avoid duplicates
 	let processedMessages = $state(new Set());
 
@@ -60,43 +61,47 @@
 		console.log('Form effect running, form:', form);
 		if (form?.success && form.message) {
 			const messageKey = `${form.message}-${form.aiResponse || 'no-ai'}`;
-			
+
 			// Check if we've already processed this message
 			if (processedMessages.has(messageKey)) {
 				console.log('Message already processed, skipping');
 				return;
 			}
-			
+
 			console.log('Adding messages, aiResponse:', form.aiResponse);
-			
+
 			// Mark as processed
 			processedMessages.add(messageKey);
-			
+
 			// Add user message
-			messages = [...messages, { 
-				id: Date.now(), 
-				text: form.message, 
-				type: 'user' 
-			}];
-			
+			messages = [
+				...messages,
+				{
+					id: Date.now(),
+					text: form.message,
+					type: 'user'
+				}
+			];
+
 			// Add AI response from the action
 			if (form.aiResponse) {
-				messages = [...messages, { 
-					id: Date.now() + 1, 
-					text: form.aiResponse, 
-					type: 'ai' 
-				}];
+				messages = [
+					...messages,
+					{
+						id: Date.now() + 1,
+						text: form.aiResponse,
+						type: 'ai'
+					}
+				];
 			}
 		}
 	});
-
-	const featureCollection = places as unknown as FeatureCollection;
-
 </script>
 
 <!-- Full screen globe -->
 <TravelGlobe
 	features={[
+		{
 			type: 'Place',
 			id: '1',
 			name: 'New York',
