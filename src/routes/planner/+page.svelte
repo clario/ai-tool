@@ -1,18 +1,9 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { enhance } from '$app/forms';
 
-	let props = $props();
-
-	console.log('Props:', props);
-
-	// Test points
-	let points = [
-		{ lat: 40.7128, lng: -74.006, name: 'New York', color: '#3b82f6' },
-		{ lat: 34.0522, lng: -118.2437, name: 'Los Angeles', color: '#ef4444' },
-		{ lat: 51.5074, lng: -0.1278, name: 'London', color: '#10b981' }
-	];
+	let { form } = $props();
 
 	// Chat messages
 	let messages = $state([
@@ -30,34 +21,30 @@
 	let messageInput = $state('');
 	let isSubmitting = $state(false);
 
-	function addRandomPoint() {
-		const randomLat = (Math.random() - 0.5) * 180;
-		const randomLng = (Math.random() - 0.5) * 360;
-		const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
-
-		points = [
-			...points,
-			{
-				lat: randomLat,
-				lng: randomLng,
-				name: `Point ${points.length + 1}`,
-				color: colors[Math.floor(Math.random() * colors.length)]
-			}
-		];
-	}
-
 	// Handle form submission with enhance
 	function handleSubmit({ formElement, submitter, cancel }: any) {
 		isSubmitting = true;
 		// Reset form after submission
+		messages.push({
+			id: Date.now(),
+			text: messageInput,
+			type: 'user'
+		});
+
 		return async ({ result, update }: any) => {
 			isSubmitting = false;
+			messageInput = ''; // Clear input
+
+			messages.push({
+				id: Date.now() + 1,
+				text: result.data.aiResponse,
+				type: 'ai'
+			});
 		};
 	}
 
 	// Handle form result
 	$effect(() => {
-		const form = props.form;
 		console.log('Form effect running, form:', form);
 		if (form?.success && form.message) {
 			const messageKey = `${form.message}-${form.aiResponse || 'no-ai'}`;
