@@ -219,5 +219,7 @@
 	</div>
 
 	<!-- Right Sidebar - Travel Plan -->
-	<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} />
+	{#if tripPlaces.length > 0 && tripRoutes.length > 0}
+		<TravelPanel places={tripPlaces} routes={tripRoutes} {startDate} onSaveTrip={handleSaveTrip} />
+	{/if}
 </div>

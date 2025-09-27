@@ -1,15 +1,18 @@
 <script lang="ts">
 	import type { MappedRoute, PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import Button from './ui/button/button.svelte';
 
 	let {
 		places,
 		routes,
-		startDate = $bindable(new Date().toISOString().split('T')[0])
+		startDate = $bindable(new Date().toISOString().split('T')[0]),
+		onSaveTrip
 	}: {
 		places: Array<PlaceSchema>;
 		routes: Array<RouteSchema>;
 		startDate?: string;
+		onSaveTrip?: () => void;
 	} = $props();
 
 	// Sort routes by order and map them with corresponding places
@@ -201,5 +204,12 @@
 				{/each}
 			{/if}
 		</div>
+
+		<!-- Save Trip Button -->
+		{#if sortedMappedRoutes().length > 0}
+			<div class="mt-4 pt-4 border-t border-gray-200">
+				<Button class="w-full" onclick={() => onSaveTrip?.()}>Save Trip</Button>
+			</div>
+		{/if}
 	</div>
 </div>
