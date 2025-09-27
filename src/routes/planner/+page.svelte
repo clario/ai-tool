@@ -6,7 +6,9 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { ModelMessage } from 'ai';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
+
+	let { data }: { data: { loadedTrip?: { name: string; places: PlaceSchema[]; routes: RouteSchema[] } } } = $props();
 
 	// Chat messages
 	let messages = $state<ModelMessage[]>([
@@ -18,6 +20,20 @@
 
 	let tripPlaces = $state<Array<PlaceSchema>>([]);
 	let tripRoutes = $state<Array<RouteSchema>>([]);
+
+	// Load trip data if provided
+	onMount(() => {
+		if (data.loadedTrip) {
+			tripPlaces = data.loadedTrip.places;
+			tripRoutes = data.loadedTrip.routes;
+			messages = [
+				{
+					content: `Loaded trip: ${data.loadedTrip.name}`,
+					role: 'assistant'
+				}
+			];
+		}
+	});
 
 	// Start date state - default to today
 	let startDate = $state(new Date().toISOString().split('T')[0]);
@@ -63,6 +79,8 @@
 	// Form state
 	let messageInput = $state('');
 	let isSubmitting = $state(false);
+	let isSaving = $state(false);
+	let saveMessage = $state('');
 
 	// Handle form submission with enhance
 	function handleSubmit({ formElement, submitter, cancel }: any) {
@@ -103,6 +121,28 @@
 			}
 		};
 	}
+
+	// Handle save trip
+	function handleSaveTrip({ formElement, submitter, cancel }: any) {
+		isSaving = true;
+		saveMessage = '';
+
+		return async ({ result, update }: any) => {
+			isSaving = false;
+
+			if (result.type === 'success') {
+				saveMessage = 'Trip saved successfully!';
+				setTimeout(() => {
+					saveMessage = '';
+				}, 3000);
+			} else {
+				saveMessage = 'Failed to save trip. Please try again.';
+				setTimeout(() => {
+					saveMessage = '';
+				}, 3000);
+			}
+		};
+	}
 </script>
 
 <!-- Full screen globe -->
@@ -111,6 +151,7 @@
 	<Navbar
 		additionalLinks={[
 			{ href: '/planner', text: 'Planner' },
+			{ href: '/saved-trips', text: 'Saved Trips' },
 			{ href: '/secondPage', text: 'Country Capital Finder' }
 		]}
 	/>
@@ -162,7 +203,7 @@
 
 				<!-- Input -->
 				<div class="flex gap-2">
-					<form method="POST" use:enhance={handleSubmit} class="flex gap-2 w-full">
+					<form method="POST" use:enhance={handleSubmit} action="?/chat" class="flex gap-2 w-full">
 						<input type="hidden" name="messages" value={JSON.stringify(messages)} />
 						<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
 						<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
@@ -201,6 +242,24 @@
 					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 			</div>
+
+			<!-- Save Trip Button -->
+			{#if tripPlaces.length > 0}
+				<div class="mb-4">
+					<form method="POST" action="?/saveTrip" use:enhance={handleSaveTrip}>
+						<input type="hidden" name="tripPlaces" value={JSON.stringify(tripPlaces)} />
+						<input type="hidden" name="tripRoutes" value={JSON.stringify(tripRoutes)} />
+						<Button type="submit" disabled={isSaving} class="w-full">
+							{isSaving ? 'Saving...' : 'Save Trip'}
+						</Button>
+					</form>
+					{#if saveMessage}
+						<div class="mt-2 text-sm {saveMessage.includes('successfully') ? 'text-green-600' : 'text-red-600'}">
+							{saveMessage}
+						</div>
+					{/if}
+				</div>
+			{/if}
 
 			<!-- Destinations List -->
 			<div class="flex-1 overflow-y-auto space-y-3">

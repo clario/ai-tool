@@ -1,10 +1,67 @@
-import { placeSchema, routeSchema } from '$lib/ai/schemas';
+import { placeSchema, routeSchema, tripPlaceToPlaceSchema, tripRouteToRouteSchema } from '$lib/ai/schemas';
 import { streamText, tool, generateText, type ModelMessage } from 'ai';
 import z from 'zod';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
+import { saveTrip, getAllTrips, getTripById, initDatabase } from '$lib/db';
+
+export const load: PageServerLoad = async ({ url }) => {
+	const tripId = url.searchParams.get('load');
+	
+	if (tripId) {
+		try {
+			await initDatabase();
+			const tripData = await getTripById(parseInt(tripId));
+			
+			if (tripData) {
+				const places = tripData.places.map(tripPlaceToPlaceSchema);
+				const routes = tripData.routes.map(tripRouteToRouteSchema);
+				
+				return {
+					loadedTrip: {
+						name: tripData.trip.name,
+						places,
+						routes
+					}
+				};
+			}
+		} catch (error) {
+			console.error('Error loading trip:', error);
+		}
+	}
+	
+	return {};
+};
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	saveTrip: async ({ request }) => {
+		const data = await request.formData();
+		const tripPlaces = JSON.parse(data.get('tripPlaces')?.toString() ?? '[]');
+		const tripRoutes = JSON.parse(data.get('tripRoutes')?.toString() ?? '[]');
+
+		if (tripPlaces.length === 0) {
+			return { success: false, error: 'No places to save.' };
+		}
+
+		try {
+			// Initialize database if needed
+			await initDatabase();
+
+			// Generate a trip name based on the first place
+			const tripName = tripPlaces.length > 0 
+				? `Trip to ${tripPlaces[0].name}${tripPlaces.length > 1 ? ` and ${tripPlaces.length - 1} more` : ''}`
+				: 'My Travel Plan';
+
+			// Save the trip
+			await saveTrip(tripName, null, tripPlaces, tripRoutes);
+
+			return { success: true };
+		} catch (error) {
+			console.error('Error saving trip:', error);
+			return { success: false, error: 'Failed to save trip.' };
+		}
+	},
+
+	chat: async ({ request }) => {
 		const data = await request.formData();
 		const message = data.get('message')?.toString().trim() || '';
 

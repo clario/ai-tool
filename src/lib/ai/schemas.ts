@@ -27,4 +27,63 @@ interface MappedRoute extends RouteSchema {
 	to: PlaceSchema;
 }
 
-export { placeSchema, routeSchema, type MappedRoute, type PlaceSchema, type RouteSchema };
+// Database schema types
+interface Trip {
+	id: number;
+	name: string;
+	description?: string;
+	created_at: Date;
+	updated_at: Date;
+}
+
+interface TripPlace {
+	id: number;
+	trip_id: number;
+	place_id: string;
+	name: string;
+	lat: number;
+	lng: number;
+	created_at: Date;
+}
+
+interface TripRoute {
+	id: number;
+	trip_id: number;
+	from_id: string;
+	to_id: string;
+	distance: number;
+	created_at: Date;
+}
+
+// Utility functions for converting between schemas
+function tripPlaceToPlaceSchema(tripPlace: TripPlace): PlaceSchema {
+	return {
+		id: tripPlace.place_id,
+		name: tripPlace.name,
+		coordinates: {
+			lat: tripPlace.lat,
+			lng: tripPlace.lng
+		}
+	};
+}
+
+function tripRouteToRouteSchema(tripRoute: TripRoute): RouteSchema {
+	return {
+		fromId: tripRoute.from_id,
+		toId: tripRoute.to_id,
+		distance: tripRoute.distance
+	};
+}
+
+export { 
+	placeSchema, 
+	routeSchema, 
+	type MappedRoute, 
+	type PlaceSchema, 
+	type RouteSchema,
+	type Trip,
+	type TripPlace,
+	type TripRoute,
+	tripPlaceToPlaceSchema,
+	tripRouteToRouteSchema
+};
