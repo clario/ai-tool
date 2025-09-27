@@ -161,7 +161,7 @@
 			<div class="p-4 pt-0 h-full flex flex-col">
 				<!-- Chat Messages -->
 				<div
-					class="flex-1 overflow-y-auto px-6 rounded-lg space-y-2 -mx-4 pt-6"
+					class="flex-1 overflow-y-auto px-6 rounded-lg space-y-2 -mx-4 pt-6 pb-4"
 					bind:this={messagesContainer}
 				>
 					{#each messages as message}
