@@ -84,19 +84,15 @@
 
 	const markerSvg = `<svg
 		xmlns="http://www.w3.org/2000/svg"
-		width="36"
+		width="28"
 		height="36"
-		viewBox="0 0 36 36"
+		viewBox="0 0 28 36"
 		fill="none"
 	>
 		<path
-			d="M18 0.5C25.5066 0.5 31.4998 5.96518 31.5 12.5996C31.5 18.1014 28.0958 23.8361 24.6074 28.251C22.873 30.4461 21.1374 32.2909 19.835 33.5869C19.1842 34.2345 18.6421 34.7445 18.2637 35.0918C18.1639 35.1834 18.0741 35.2626 17.998 35.3311C17.9225 35.2635 17.8343 35.1848 17.7354 35.0947C17.357 34.75 16.8148 34.2442 16.1641 33.6006C14.8618 32.3126 13.1259 30.4768 11.3916 28.2881C7.90429 23.887 4.5 18.1521 4.5 12.5996C4.50024 5.96518 10.4934 0.5 18 0.5Z"
-			fill="#0F66D8"
-			stroke="white"
-		/>
-		<path
-			d="M18 21C21.866 21 25 17.866 25 14C25 10.134 21.866 7 18 7C14.134 7 11 10.134 11 14C11 17.866 14.134 21 18 21Z"
+			d="M14 0.5C21.5066 0.5 27.4998 5.96518 27.5 12.5996C27.5 18.1014 24.0958 23.8361 20.6074 28.251C18.873 30.4461 17.1374 32.2909 15.835 33.5869C15.1842 34.2345 14.6421 34.7445 14.2637 35.0918C14.1639 35.1834 14.0741 35.2626 13.998 35.3311C13.9225 35.2635 13.8343 35.1848 13.7354 35.0947C13.357 34.75 12.8148 34.2442 12.1641 33.6006C10.8618 32.3126 9.12595 30.4768 7.3916 28.2881C3.90429 23.887 0.5 18.1521 0.5 12.5996C0.500235 5.96518 6.49343 0.5 14 0.5ZM14 6.5C9.85786 6.5 6.5 9.85786 6.5 14C6.5 18.1421 9.85786 21.5 14 21.5C18.1421 21.5 21.5 18.1421 21.5 14C21.5 9.85786 18.1421 6.5 14 6.5Z"
 			fill="white"
+			stroke="#DBDBDB"
 		/>
 	</svg>`;
 
@@ -110,7 +106,7 @@
 			.htmlElement((d) => {
 				const el = document.createElement('div');
 				el.innerHTML = markerSvg;
-				el.style.width = `36px`;
+				el.style.width = `28px`;
 				el.style.height = `36px`;
 				el.style.translate = `0 -50%`;
 				el.style.transition = 'opacity 250ms';
@@ -127,8 +123,8 @@
 			.labelLat((d) => (d as PlaceSchema).coordinates.lat)
 			.labelLng((d) => (d as PlaceSchema).coordinates.lng)
 			.labelText((d) => (d as PlaceSchema).name)
-			.labelColor(() => '#FFFF00')
-			.labelDotRadius(0.1)
+			.labelColor(() => '#FFFFFF')
+			.labelDotRadius(0)
 			.labelAltitude(0);
 	}
 
@@ -160,7 +156,7 @@
 			.arcEndLat((d) => (d as MappedRoute).to.coordinates.lat)
 			.arcEndLng((d) => (d as MappedRoute).to.coordinates.lng)
 			.arcStroke(0.1)
-			.arcColor(() => '#FFFFFF');
+			.arcColor(() => '#F1F1F1');
 	}
 
 	onDestroy(() => {
