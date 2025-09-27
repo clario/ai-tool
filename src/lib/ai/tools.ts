@@ -14,9 +14,5 @@ export const createSetTravelPlanTool = tool({
 			`,
 	inputSchema: z.object({
 		data: setTravelPlanToolInputSchema
-	}),
-	execute: async (input) => {
-		console.log('input', input);
-		console.log('input.data', input.data);
-	}
+	})
 });
