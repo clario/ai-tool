@@ -26,12 +26,12 @@ export const actions: Actions = {
 						name: 'response',
 						description: 'Respond to the user',
 						inputSchema: z.object({
-							response: z.string()
+							response: z.string().describe('Max length 25 words')
 						})
 					})
 				},
 				system:
-					'You are a knowledgeable travel planning assistant. Provide helpful, concise responses about travel destinations, planning tips, and recommendations. Always return max 10 words'
+					'You are a knowledgeable travel planning assistant. Provide helpful, concise responses about travel destinations, planning tips, and recommendations. '
 			});
 
 			return {
