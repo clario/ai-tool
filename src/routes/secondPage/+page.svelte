@@ -33,7 +33,6 @@
 
 	// Reset loading state when form data changes (server response)
 	$effect(() => {
-		console.log(country);
 		if (form) {
 			isLoading = false;
 		}

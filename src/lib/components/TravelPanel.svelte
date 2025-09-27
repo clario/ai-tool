@@ -89,7 +89,6 @@
 			const response = await fetch(`/weather?lat=${place.coordinates.lat}&lon=${place.coordinates.lng}`);
 			if (response.ok) {
 				const data: WeatherData = await response.json();
-				console.log('Weather data for', place.name, data);
 				// Create a new Map to trigger reactivity
 				weatherData = new Map(weatherData.set(place.id, data));
 			}
@@ -119,7 +118,6 @@
 
 	// Handle clicking on a destination to zoom the globe
 	function handleDestinationClick(place: PlaceSchema) {
-		console.log('Zooming to', place);
 		if (zoomToPlace) {
 			zoomToPlace(place);
 		}

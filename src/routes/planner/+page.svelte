@@ -122,7 +122,6 @@
 	}
 
 	function handleZoom(place: PlaceSchema) {
-		console.log('Zooming to yeaaaa', place);
 		globeRef.zoomToLocation(place);
 	}
 </script>

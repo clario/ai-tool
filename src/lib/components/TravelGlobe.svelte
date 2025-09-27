@@ -22,7 +22,6 @@
 
 	// Function to zoom to a specific place
 	export function zoomToLocation(place: PlaceSchema) {
-		console.log('Zooming to', place);
 		if (globe) {
 			globe.pointOfView({
 				lat: place.coordinates.lat,
