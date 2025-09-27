@@ -1,8 +1,6 @@
 <script lang="ts">
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import places from '$lib/assets/places.json';
-	import { type FeatureCollection } from 'geojson';
 
 	// Test points
 	let points = [
@@ -26,12 +24,37 @@
 			}
 		];
 	}
-
-	const featureCollection = places as unknown as FeatureCollection;
 </script>
 
 <!-- Full screen globe -->
-<TravelGlobe features={featureCollection.features} />
+<TravelGlobe
+	features={[
+		{
+			type: 'Place',
+			id: '1',
+			name: 'New York',
+			coordinates: {
+				lat: 40.7128,
+				lng: -74.006
+			}
+		},
+		{
+			type: 'Place',
+			id: '2',
+			name: 'Los Angeles',
+			coordinates: {
+				lat: 34.0522,
+				lng: -118.2437
+			}
+		},
+		{
+			type: 'Route',
+			fromId: '1',
+			toId: '2',
+			distance: 1000
+		}
+	]}
+/>
 
 <!-- Chat Interface at Bottom -->
 <div class="fixed bottom-16 left-16 right-16 h-1/4">

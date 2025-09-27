@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import type { Feature, LineString, Point } from 'geojson';
+	import { type MappedRoute, type PlaceSchema, type RouteSchema } from '$lib/ai/schemas';
 	import type { GlobeInstance } from 'globe.gl';
 	import { onDestroy, onMount } from 'svelte';
 
-	let { features }: { features: Array<Feature> } = $props();
+	let { features }: { features: Array<PlaceSchema | RouteSchema> } = $props();
 
 	let globeContainer: HTMLDivElement;
 	let globe: GlobeInstance | null = null;
 
-	const labelFeatures = $derived(features.filter((f) => f.geometry.type === 'Point'));
-	const lineStringFeatures = $derived(features.filter((f) => f.geometry.type === 'LineString'));
+	const places = $derived(features.filter((f) => f.type === 'Place'));
+	const routes = $derived(features.filter((f) => f.type === 'Route'));
 
 	onMount(async () => {
-		if (!browser || !globeContainer) return;
+		if (!browser || !globeContainer) {
+			return;
+		}
 
-		// Dynamic import to avoid SSR issues
 		const { default: Globe } = await import('globe.gl');
 
-		// Initialize simple globe with Apple Maps style
 		globe = new Globe(globeContainer)
 			.globeImageUrl('/2_no_clouds_16k.jpg')
 			.width(window.innerWidth)
@@ -31,44 +31,57 @@
 			altitude: 0.6
 		});
 
-		// Initial data load
-		updateLabelFeatures();
-		updateLineStringFeatures();
+		updatePlaceFeatures();
+		updateRouteFeatures();
 	});
 
-	// Reactive update when points change
 	$effect(() => {
-		if (globe && labelFeatures) {
-			updateLabelFeatures();
+		if (globe && places) {
+			updatePlaceFeatures();
 		}
 	});
 
 	$effect(() => {
-		if (globe && lineStringFeatures) {
-			updateLineStringFeatures();
+		if (globe && routes) {
+			updateRouteFeatures();
 		}
 	});
 
-	function updateLabelFeatures() {
+	function updatePlaceFeatures() {
 		if (!globe) return;
 
 		globe
-			.labelsData(labelFeatures)
-			.labelLat((d) => (d as Feature<Point>).geometry.coordinates[1])
-			.labelLng((d) => (d as Feature<Point>).geometry.coordinates[0])
-			.labelText((d) => (d as Feature<Point>).properties?.name || '')
+			.labelsData(places)
+			.labelLat((d) => (d as PlaceSchema).coordinates.lat)
+			.labelLng((d) => (d as PlaceSchema).coordinates.lng)
+			.labelText((d) => (d as PlaceSchema).name)
 			.labelColor(() => '#FFFFFF');
 	}
 
-	function updateLineStringFeatures() {
+	function updateRouteFeatures() {
 		if (!globe) return;
 
+		const mappedRoutes = routes.reduce<MappedRoute[]>((acc, route) => {
+			const from = places.find((p) => p.id === route.fromId);
+			const to = places.find((p) => p.id === route.toId);
+
+			if (from && to) {
+				acc.push({
+					...route,
+					from,
+					to
+				});
+			}
+
+			return acc;
+		}, []);
+
 		globe
-			.arcsData(lineStringFeatures)
-			.arcStartLat((d) => (d as Feature<LineString>).geometry.coordinates.at(0)?.[1] ?? 0)
-			.arcStartLng((d) => (d as Feature<LineString>).geometry.coordinates.at(0)?.[0] ?? 0)
-			.arcEndLat((d) => (d as Feature<LineString>).geometry.coordinates.at(-1)?.[1] ?? 0)
-			.arcEndLng((d) => (d as Feature<LineString>).geometry.coordinates.at(-1)?.[0] ?? 0)
+			.arcsData(mappedRoutes)
+			.arcStartLat((d) => (d as MappedRoute).from.coordinates.lat)
+			.arcStartLng((d) => (d as MappedRoute).from.coordinates.lng)
+			.arcEndLat((d) => (d as MappedRoute).to.coordinates.lat)
+			.arcEndLng((d) => (d as MappedRoute).to.coordinates.lng)
 			.arcStroke(0.1)
 			.arcColor(() => '#FFFFFF');
 	}
