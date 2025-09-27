@@ -1,6 +1,7 @@
 import { createSetTravelPlanTool } from '$lib/ai/tools';
+import z from 'zod';
 import type { Actions } from './$types';
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
 
 export const actions: Actions = {
 	default: async ({ request }) => {
@@ -17,26 +18,26 @@ export const actions: Actions = {
 			// Process the message with AI
 			const result = streamText({
 				model: 'openai/gpt-4o-mini',
-				prompt: `You are a helpful travel planning assistant. The user asked: "${message}". Provide a helpful response about travel planning.`,
-				tools: {
-					setTravelPlan: createSetTravelPlanTool((e) => {
-						console.log('hello!', e);
+				prompt: `You are a helpful travel planning assistant. The user asked: "${message}". Provide a helpful response about travel planning. If they ask you to set their travel plan, you MUST use the setTravelPlan tool to create a travel plan with places and routes.`,
+				toolChoice: 'required',
+                tools: {
+					setTravelPlan: createSetTravelPlanTool,
+					response: tool({
+						name: 'response',
+						description: 'Respond to the user',
+						inputSchema: z.object({
+							response: z.string()
+						})
 					})
 				},
 				system:
 					'You are a knowledgeable travel planning assistant. Provide helpful, concise responses about travel destinations, planning tips, and recommendations. Always return max 10 words'
 			});
 
-			let aiResponse = '';
-			for await (const chunk of result.textStream) {
-				console.log('AI response chunk:', chunk);
-				aiResponse += chunk;
-			}
-			console.log('AI response:', aiResponse);
 			return {
 				success: true,
 				message,
-				aiResponse: aiResponse.trim()
+				aiResponse: await result.toolCalls
 			};
 		} catch (error) {
 			console.error('AI processing error:', error);

@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { tick } from 'svelte';
 	import type { PlaceSchema, RouteSchema } from '$lib/ai/schemas';
 	import TravelGlobe from '$lib/components/TravelGlobe.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-
-	let { form } = $props();
+	import { tick } from 'svelte';
 
 	// Chat messages
 	let messages = $state([
@@ -16,8 +14,6 @@
 		}
 	]);
 
-	// Track processed messages to avoid duplicates
-	let processedMessages = $state(new Set());
 	let tripPlan = $state<Array<PlaceSchema | RouteSchema>>([]);
 	let messagesContainer: HTMLDivElement | null = null;
 
@@ -47,55 +43,24 @@
 		return async ({ result, update }: any) => {
 			isSubmitting = false;
 			messageInput = ''; // Clear input
+			console.log('result', result);
 
-			messages.push({
-				id: Date.now() + 1,
-				text: result.data.aiResponse,
-				type: 'ai'
-			});
-			scrollMessagesToBottom();
+			if (result.type === 'success') {
+				result.data.aiResponse.forEach((toolCall: any) => {
+					if (toolCall.toolName === 'setTravelPlan') {
+						tripPlan = toolCall.input.data;
+					} else if (toolCall.toolName === 'response') {
+						messages.push({
+							id: Date.now() + 1,
+							text: toolCall.input.response,
+							type: 'ai'
+						});
+						scrollMessagesToBottom();
+					}
+				});
+			}
 		};
 	}
-
-	// Handle form result
-	$effect(() => {
-		if (form?.success && form.message) {
-			const messageKey = `${form.message}-${form.aiResponse || 'no-ai'}`;
-
-			// Check if we've already processed this message
-			if (processedMessages.has(messageKey)) {
-				console.log('Message already processed, skipping');
-				return;
-			}
-
-			// Mark as processed
-			processedMessages.add(messageKey);
-
-			// Add user message
-			messages = [
-				...messages,
-				{
-					id: Date.now(),
-					text: form.message,
-					type: 'user'
-				}
-			];
-
-			// Add AI response from the action
-			if (form.aiResponse) {
-				messages = [
-					...messages,
-					{
-						id: Date.now() + 1,
-						text: form.aiResponse,
-						type: 'ai'
-					}
-				];
-			}
-
-			scrollMessagesToBottom();
-		}
-	});
 </script>
 
 <!-- Full screen globe -->
@@ -108,7 +73,10 @@
 			<h2 class="text-lg font-semibold mb-3 text-gray-800">Travel Assistant</h2>
 
 			<!-- Chat Messages -->
-			<div class="flex-1 overflow-y-auto mb-3 p-2 rounded-lg space-y-2" bind:this={messagesContainer}>
+			<div
+				class="flex-1 overflow-y-auto mb-3 p-2 rounded-lg space-y-2"
+				bind:this={messagesContainer}
+			>
 				{#each messages as message}
 					<div class="flex {message.type === 'user' ? 'justify-end' : 'justify-start'}">
 						<div
